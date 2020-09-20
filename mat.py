@@ -38,3 +38,9 @@ q1m = 1 - a - q2m
 # S-weak
 q2s = (1 - a) * (red_LMS[0] - red_LMS[2]) / (red_LMS[0] - red_LMS[1])
 q1s = 1 - a - q2s
+
+
+# Cone monochromats
+S_mono_cone = np.array([[0, 0, 1],
+                        [0, 0, 1],
+                        [0, 0, 1]])
