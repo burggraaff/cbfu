@@ -2,6 +2,7 @@ import numpy as np
 import mat
 import fu
 from spectacle.linearity import sRGB_generic
+from matplotlib import pyplot as plt
 
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
@@ -11,3 +12,8 @@ FU_deficient_sRGB = sRGB_generic(FU_deficient_RGB, normalization=1).astype(np.ui
 
 example_indices = ((0, 0, 0, 1, 1, 2, 2), (0, 50, -1, 50, -1, 50, -1))
 examples_sRGB = FU_deficient_sRGB[example_indices]
+
+fig, ax = plt.subplot(111, figsize=(10, 10))
+
+plt.show()
+plt.close()
