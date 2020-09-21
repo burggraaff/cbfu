@@ -14,7 +14,7 @@ example_indices = ((0, 0, 0, 1, 1, 2, 2), (-1, 50, 0, 50, 0, 50, 0))
 examples_sRGB = FU_deficient_sRGB[example_indices]
 examples_labels = ["Regular", "50% L-deficient", "Fully L-deficient", "50% M-deficient", "Fully M-deficient", "50% S-deficient", "Fully S-deficient"]
 
-kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
+kwargs = {"width": 0.95, "height": 0.95, "edgecolor": "none"}
 fig, ax = plt.subplots(figsize=(9, 3))
 for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::-1])):
     print(i, label)
@@ -25,12 +25,17 @@ for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::
 ax.axis("equal")
 ax.set_yticks(np.arange(6.5, 0, -1))
 ax.set_yticklabels(examples_labels)
+ax.tick_params(axis="y", left=False, pad=0)
 
-ax.set_xticks(np.arange(0.5, 21, 1))
+ax.set_xticks(np.arange(kwargs["width"]/2, 21, 1))
 ax.set_xticklabels(np.arange(1, 22))
 ax.set_xlabel("Forel-Ule colour")
 ax.tick_params(axis="x", bottom=False, labelbottom=False, labeltop=True)
+ax.xaxis.set_label_position("top")
+for tick in ax.xaxis.get_major_ticks():
+    tick.label.set_horizontalalignment("center")
 
+plt.box()
 plt.savefig("FU_example.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
