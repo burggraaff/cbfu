@@ -29,7 +29,7 @@ red_LMS = M_xyz_to_lms @ red_XYZ
 blue_LMS = M_xyz_to_lms @ blue_XYZ
 white_LMS = M_xyz_to_lms @ white_XYZ
 
-a = np.linspace(0, 1, 100)
+a = np.linspace(0, 1, 101)
 zeros = np.zeros_like(a)
 ones = np.ones_like(a)
 
