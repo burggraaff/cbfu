@@ -10,7 +10,7 @@ FU_deficient_RGB = np.einsum("ij,cafj->cafi", mat.M_xyz_to_rgb, FU_deficient_XYZ
 
 FU_deficient_sRGB = sRGB_generic(FU_deficient_RGB, normalization=1).astype(np.uint8) # Gamma-expanded (non-linear) sRGB values. Note these are clipped to 0-255 to accommodate the limited gamut of sRGB.
 
-example_indices = ((0, 0, 0, 1, 1, 2, 2), (0, 50, -1, 50, -1, 50, -1))
+example_indices = ((0, 0, 0, 1, 1, 2, 2), (-1, 50, 0, 50, 0, 50, 0))
 examples_sRGB = FU_deficient_sRGB[example_indices]
 
 fig, ax = plt.subplot(111, figsize=(10, 10))
