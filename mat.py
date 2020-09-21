@@ -8,6 +8,9 @@ M_rgb_to_xyz = np.array([[0.4124564, 0.3575761, 0.1804375],
 
 M_xyz_to_rgb = np.linalg.inv(M_rgb_to_xyz)
 
+# Should I use this (D65) or the equal-energy version, like the FU scale?
+# Or convert FU to D65? Probably easier
+# https://en.wikipedia.org/wiki/LMS_color_space#Hunt.2C_RLAB
 M_xyz_to_lms = np.array([[ 0.4002, 0.7076, -0.0808],
                          [-0.2263, 1.1653,  0.0457],
                          [ 0     , 0     ,  0.9182]])
