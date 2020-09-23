@@ -28,7 +28,7 @@ ax.set_yticklabels(examples_labels)
 ax.tick_params(axis="y", left=False, pad=0)
 
 ax.set_xticks(np.arange(kwargs["width"]/2, 21, 1))
-ax.set_xticklabels(np.arange(1, 22))
+ax.set_xticklabels(fu.numbers)
 ax.set_xlabel("Forel-Ule colour")
 ax.tick_params(axis="x", bottom=False, labelbottom=False, labeltop=True)
 ax.xaxis.set_label_position("top")
@@ -42,3 +42,7 @@ plt.close()
 
 # Chromaticities
 FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
+
+# Hue angles
+FU_deficient_alpha = np.arctan2(FU_deficient_xy[...,1]-1/3, FU_deficient_xy[...,0]-1/3) % (2*np.pi)
+FU_deficient_alpha_deg = np.rad2deg(FU_deficient_alpha)
