@@ -39,3 +39,6 @@ plt.box()
 plt.savefig("FU_example.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
+
+# Chromaticities
+FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
