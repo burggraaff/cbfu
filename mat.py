@@ -55,6 +55,7 @@ q1s = 1 - a - q2s
 SS = np.stack([ones, zeros, zeros, zeros, ones, zeros, q1s, q2s, a], axis=1).reshape(-1, 3, 3)
 
 # LMS-weak combined
+# From regular LMS to deficient LMS
 SLMS = np.stack([SL, SM, SS]) # Axes: deficiency (lms), a, i, j
 
 # Cone monochromats
