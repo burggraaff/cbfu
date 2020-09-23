@@ -8,14 +8,19 @@ M_rgb_to_xyz = np.array([[0.4124564, 0.3575761, 0.1804375],
 
 M_xyz_to_rgb = np.linalg.inv(M_rgb_to_xyz)
 
-# Should I use this (D65) or the equal-energy version, like the FU scale?
-# Or convert FU to D65? Probably easier
 # https://en.wikipedia.org/wiki/LMS_color_space#Hunt.2C_RLAB
-M_xyz_to_lms = np.array([[ 0.4002, 0.7076, -0.0808],
-                         [-0.2263, 1.1653,  0.0457],
-                         [ 0     , 0     ,  0.9182]])
+M_xyz_d65_to_lms = np.array([[ 0.4002, 0.7076, -0.0808],
+                             [-0.2263, 1.1653,  0.0457],
+                             [ 0     , 0     ,  0.9182]])
 
-M_lms_to_xyz = np.linalg.inv(M_xyz_to_lms)
+M_lms_to_xyz_d65 = np.linalg.inv(M_xyz_d65_to_lms)
+
+# https://en.wikipedia.org/wiki/LMS_color_space#Hunt.2C_RLAB
+M_xyz_e_to_lms = np.array([[ 0.38971, 0.68898, -0.07868],
+                           [-0.22981, 1.18340,  0.04641],
+                           [ 0      , 0      ,  1.     ]])
+
+M_lms_to_xyz_e = np.linalg.inv(M_xyz_e_to_lms)
 
 red_RGB = np.array([1,0,0])
 blue_RGB = np.array([0,0,1])
@@ -25,9 +30,9 @@ red_XYZ = M_rgb_to_xyz @ red_RGB
 blue_XYZ = M_rgb_to_xyz @ blue_RGB
 white_XYZ = M_rgb_to_xyz @ white_RGB
 
-red_LMS = M_xyz_to_lms @ red_XYZ
-blue_LMS = M_xyz_to_lms @ blue_XYZ
-white_LMS = M_xyz_to_lms @ white_XYZ
+red_LMS = M_xyz_d65_to_lms @ red_XYZ
+blue_LMS = M_xyz_d65_to_lms @ blue_XYZ
+white_LMS = M_xyz_d65_to_lms @ white_XYZ
 
 a = np.linspace(0, 1, 101)
 zeros = np.zeros_like(a)

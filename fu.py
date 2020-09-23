@@ -29,5 +29,5 @@ FU = np.array([[0.23721, 0.20691, 0.79546],
                [0.11808, 0.09532, 0.01566],
                [0.10452, 0.08079, 0.01255]])
 
-FU_LMS = np.einsum("ij,fj->fi", mat.M_xyz_to_lms, FU)
+FU_LMS = np.einsum("ij,fj->fi", mat.M_xyz_e_to_lms, FU)
 FU_RGB = np.einsum("ij,fj->fi", mat.M_xyz_to_rgb, FU) # Linear RGB
