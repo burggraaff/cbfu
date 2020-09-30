@@ -61,7 +61,11 @@ plt.close()
 
 # Distance matrices
 distances = distance_matrix(fu.FU, fu.FU)
-plt.imshow(distances)
-plt.colorbar()
+plt.imshow(distances, vmin=0, extent=(0, 21, 21, 0), cmap="cividis")
+cb = plt.colorbar()
+cb.set_label("Euclidean distance (XYZ)")
+plt.xlim(0, 21)
+plt.ylim(0, 21)
+plt.title("Distance matrix for Forel-Ule colours (regular)")
 plt.show()
 plt.close()
