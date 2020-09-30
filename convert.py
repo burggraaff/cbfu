@@ -2,6 +2,7 @@ import numpy as np
 import mat
 import fu
 from spectacle.linearity import sRGB_generic
+from spectacle.plot import colorbar
 from matplotlib import pyplot as plt, patches
 from scipy.spatial import distance_matrix
 
@@ -60,23 +61,33 @@ plt.show()
 plt.close()
 
 # Distance matrices - XYZ
-distances = distance_matrix(fu.FU, fu.FU)
-plt.imshow(distances, vmin=0, extent=(0, 21, 21, 0), cmap="cividis")
-cb = plt.colorbar()
-cb.set_label("Euclidean distance (XYZ)")
-plt.xlim(0, 21)
-plt.ylim(0, 21)
-plt.title("Distance matrix for Forel-Ule colours (regular)")
+fig, axs = plt.subplots(ncols=7, figsize=(10,5), sharex=True, sharey=True)
+for ax, arr, label in zip(axs, FU_deficient_XYZ[example_indices], examples_labels):
+    distances = distance_matrix(arr, arr)
+    im = ax.imshow(distances, vmin=0, extent=(0, 21, 21, 0), cmap="cividis")
+    colorbar(im)
+    ax.set_title(f"\n{label}")
+# cb = axs[-1].colorbar()
+# cb.set_label("Euclidean distance (XYZ)")
+axs[0].set_xlim(0, 21)
+axs[0].set_ylim(0, 21)
+axs[3].set_title(f"Distance matrix for Forel-Ule colours\n{examples_labels[3]}")
+plt.savefig("distance_matrix_XYZ.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
 # Distance matrices - xy
-distances = distance_matrix(FU_deficient_xy[0,-1], FU_deficient_xy[0,-1])
-plt.imshow(distances, vmin=0, vmax=0.45, extent=(0, 21, 21, 0), cmap="cividis")
-cb = plt.colorbar()
-cb.set_label("Euclidean distance (xy)")
-plt.xlim(0, 21)
-plt.ylim(0, 21)
-plt.title("Distance matrix for Forel-Ule colours (regular)")
+fig, axs = plt.subplots(ncols=7, figsize=(10,5), sharex=True, sharey=True)
+for ax, arr, label in zip(axs, FU_deficient_xy[example_indices], examples_labels):
+    distances = distance_matrix(arr, arr)
+    im = ax.imshow(distances, vmin=0, vmax=0.45, extent=(0, 21, 21, 0), cmap="cividis")
+    colorbar(im)
+    ax.set_title(f"\n{label}")
+# cb = axs[-1].colorbar()
+# cb.set_label("Euclidean distance (XYZ)")
+axs[0].set_xlim(0, 21)
+axs[0].set_ylim(0, 21)
+axs[3].set_title(f"Distance matrix for Forel-Ule colours\n{examples_labels[3]}")
+plt.savefig("distance_matrix_xy.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
