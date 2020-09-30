@@ -4,6 +4,7 @@ import fu
 from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches
 from scipy.spatial import distance_matrix
+from colorio._tools import plot_flat_gamut
 
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz_e, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
@@ -43,6 +44,15 @@ plt.close()
 
 # Chromaticities
 FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
+
+# Plot chromaticities on gamut
+plt.figure(figsize=(5,5))
+plot_flat_gamut(plot_planckian_locus=False)
+plt.scatter(*FU_deficient_xy[0,-1].T, c="k", marker="o", label="FU colours")
+plt.plot(*FU_deficient_xy[0,-1].T, c="k")
+plt.legend(loc="upper right")
+plt.show()
+plt.close()
 
 # Hue angles
 FU_deficient_alpha = np.arctan2(FU_deficient_xy[...,1]-1/3, FU_deficient_xy[...,0]-1/3) % (2*np.pi)
