@@ -3,6 +3,7 @@ import mat
 import fu
 from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches
+from scipy.spatial import distance_matrix
 
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz_e, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
@@ -79,5 +80,11 @@ axs[2].set_xlabel("$a$")
 axs[1].set_ylabel("Hue angle")
 axs[1].legend(loc="best")
 axs[0].set_xlim(1, 0)
+plt.show()
+plt.close()
+
+distances = distance_matrix(fu.FU, fu.FU)
+plt.imshow(distances)
+plt.colorbar()
 plt.show()
 plt.close()
