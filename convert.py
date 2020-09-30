@@ -2,7 +2,6 @@ import numpy as np
 import mat
 import fu
 from spectacle.linearity import sRGB_generic
-from spectacle.plot import colorbar
 from matplotlib import pyplot as plt, patches
 from scipy.spatial import distance_matrix
 
@@ -60,34 +59,31 @@ plt.legend(loc="best")
 plt.show()
 plt.close()
 
+def plot_distance_matrices(FU_arrays, saveto="image.pdf", title="", ylabel="XYZ", **kwargs):
+    fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(10,5.2))
+    for ax, arr, label in zip(axs.ravel()[1:], FU_arrays[example_indices], examples_labels):
+        distances = distance_matrix(arr, arr)
+        im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap="cividis", **kwargs)
+        ax.set_title(f"\n{label}")
+        ax.set_xlim(0, 21)
+        ax.set_ylim(0, 21)
+        ax.set_xticks([0.5, 10.5, 20.5])
+        ax.set_xticklabels([1, 11, 21])
+        ax.set_yticks([0.5, 10.5, 20.5])
+        ax.set_yticklabels([1, 11, 21])
+    cax = axs.ravel()[0]
+    cb = fig.colorbar(im, cax=cax, orientation="vertical")
+    cax.set_aspect("equal")
+    cax.tick_params(axis="y", left=True, labelleft=True, right=False, labelright=False)
+    cax.set_ylabel(f"Euclidean distance ({ylabel})")
+    cax.yaxis.set_label_position("left")
+    fig.suptitle(title)
+    plt.savefig(saveto, bbox_inches="tight")
+    plt.show()
+    plt.close()
+
 # Distance matrices - XYZ
-fig, axs = plt.subplots(ncols=7, figsize=(10,5), sharex=True, sharey=True)
-for ax, arr, label in zip(axs, FU_deficient_XYZ[example_indices], examples_labels):
-    distances = distance_matrix(arr, arr)
-    im = ax.imshow(distances, vmin=0, extent=(0, 21, 21, 0), cmap="cividis")
-    colorbar(im)
-    ax.set_title(f"\n{label}")
-# cb = axs[-1].colorbar()
-# cb.set_label("Euclidean distance (XYZ)")
-axs[0].set_xlim(0, 21)
-axs[0].set_ylim(0, 21)
-axs[3].set_title(f"Distance matrix for Forel-Ule colours\n{examples_labels[3]}")
-plt.savefig("distance_matrix_XYZ.pdf", bbox_inches="tight")
-plt.show()
-plt.close()
+plot_distance_matrices(FU_deficient_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours", ylabel="XYZ")
 
 # Distance matrices - xy
-fig, axs = plt.subplots(ncols=7, figsize=(10,5), sharex=True, sharey=True)
-for ax, arr, label in zip(axs, FU_deficient_xy[example_indices], examples_labels):
-    distances = distance_matrix(arr, arr)
-    im = ax.imshow(distances, vmin=0, vmax=0.45, extent=(0, 21, 21, 0), cmap="cividis")
-    colorbar(im)
-    ax.set_title(f"\n{label}")
-# cb = axs[-1].colorbar()
-# cb.set_label("Euclidean distance (XYZ)")
-axs[0].set_xlim(0, 21)
-axs[0].set_ylim(0, 21)
-axs[3].set_title(f"Distance matrix for Forel-Ule colours\n{examples_labels[3]}")
-plt.savefig("distance_matrix_xy.pdf", bbox_inches="tight")
-plt.show()
-plt.close()
+plot_distance_matrices(FU_deficient_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours", ylabel="xy")
