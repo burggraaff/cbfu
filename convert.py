@@ -59,30 +59,7 @@ plt.legend(loc="best")
 plt.show()
 plt.close()
 
-# Plot hue angle for examples
-for i, (alphas, label) in enumerate(zip(FU_deficient_alpha_deg[example_indices], examples_labels)):
-    print(i, label)
-    plt.plot(fu.numbers, alphas, label=label, lw=3)
-plt.xlabel("Forel-Ule colour")
-plt.ylabel("Hue angle")
-plt.xlim(0.9, 21.1)
-plt.legend(loc="best")
-plt.show()
-plt.close()
-
-# Plot hue angle for several FU colours as function of deficiency
-fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True)
-for j, ax in enumerate(axs):
-    for FU in (1, 9, 15, 21):
-        i = FU-1
-        ax.plot(mat.a, FU_deficient_alpha_deg[j,:,i], label=f"FU {FU}", lw=3)
-axs[2].set_xlabel("$a$")
-axs[1].set_ylabel("Hue angle")
-axs[1].legend(loc="best")
-axs[0].set_xlim(1, 0)
-plt.show()
-plt.close()
-
+# Distance matrices
 distances = distance_matrix(fu.FU, fu.FU)
 plt.imshow(distances)
 plt.colorbar()
