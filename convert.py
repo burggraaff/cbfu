@@ -59,11 +59,22 @@ plt.legend(loc="best")
 plt.show()
 plt.close()
 
-# Distance matrices
+# Distance matrices - XYZ
 distances = distance_matrix(fu.FU, fu.FU)
 plt.imshow(distances, vmin=0, extent=(0, 21, 21, 0), cmap="cividis")
 cb = plt.colorbar()
 cb.set_label("Euclidean distance (XYZ)")
+plt.xlim(0, 21)
+plt.ylim(0, 21)
+plt.title("Distance matrix for Forel-Ule colours (regular)")
+plt.show()
+plt.close()
+
+# Distance matrices - xy
+distances = distance_matrix(FU_deficient_xy[0,-1], FU_deficient_xy[0,-1])
+plt.imshow(distances, vmin=0, vmax=0.45, extent=(0, 21, 21, 0), cmap="cividis")
+cb = plt.colorbar()
+cb.set_label("Euclidean distance (xy)")
 plt.xlim(0, 21)
 plt.ylim(0, 21)
 plt.title("Distance matrix for Forel-Ule colours (regular)")
