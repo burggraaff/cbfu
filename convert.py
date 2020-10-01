@@ -165,15 +165,19 @@ plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, 
 # Distance matrices - xy
 plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours in xy", ylabel="xy")
 
+# Matrices to select diagonal and off-diagonal elements
+diag = np.eye(21, dtype=bool)
+off_diag = ~diag
+
 # Minimum distance with regular vision
 distances_XYZ_regular = distances_XYZ[0,-1]
-distances_XYZ_regular_min = np.min(distances_XYZ_regular[distances_XYZ_regular > 0])
+distances_XYZ_regular_min = np.min(distances_XYZ_regular[off_diag])
 
 distances_xy_regular = distances_xy[0,-1]
-distances_xy_regular_min = np.min(distances_xy_regular[distances_xy_regular > 0])
+distances_xy_regular_min = np.min(distances_xy_regular[off_diag])
 
 # Median XYZ distance as a function of a
-median_distance_XYZ = np.median(distances_XYZ, axis=(2,3))
+median_distance_XYZ = np.median(distances_XYZ[...,off_diag], axis=2)
 
 plt.figure(figsize=(5,3))
 for i, label in enumerate("LMS"):
