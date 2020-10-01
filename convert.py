@@ -3,7 +3,7 @@ import mat
 import fu
 from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches
-from scipy.spatial import distance_matrix
+from scipy.spatial import minkowski_distance
 from colorio._tools import plot_flat_gamut
 
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
@@ -124,10 +124,22 @@ plt.legend(loc="best")
 plt.show()
 plt.close()
 
-def plot_distance_matrices(FU_arrays, saveto="image.pdf", title="", ylabel="XYZ", **kwargs):
+# Calculate distance matrices
+def distance_matrix(FU_deficient_array):
+    """
+    Calculate the distance matrix between all FU colours (21x21 matrix) for each
+    kind of cone deficiency.
+    """
+    distances = minkowski_distance(FU_deficient_array[:,:,:,np.newaxis,:], FU_deficient_array[:,:,np.newaxis,:,:])
+    return distances
+
+distances_XYZ = distance_matrix(FU_deficient_XYZ)
+distances_xy = distance_matrix(FU_deficient_xy)
+
+# Plot distance matrices
+def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="XYZ", **kwargs):
     fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(10,5.2))
-    for ax, arr, label in zip(axs.ravel()[1:], FU_arrays[example_indices], examples_labels):
-        distances = distance_matrix(arr, arr)
+    for ax, distances, label in zip(axs.ravel()[1:], FU_distance_matrices[example_indices], examples_labels):
         im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap="cividis", **kwargs)
         ax.set_title(f"\n{label}")
         ax.set_xlim(0, 21)
@@ -148,7 +160,7 @@ def plot_distance_matrices(FU_arrays, saveto="image.pdf", title="", ylabel="XYZ"
     plt.close()
 
 # Distance matrices - XYZ
-plot_distance_matrices(FU_deficient_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours", ylabel="XYZ")
+plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours", ylabel="XYZ")
 
 # Distance matrices - xy
-plot_distance_matrices(FU_deficient_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours", ylabel="xy")
+plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours", ylabel="xy")
