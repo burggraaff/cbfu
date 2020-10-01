@@ -182,6 +182,7 @@ median_distance_XYZ = np.median(distances_XYZ[...,off_diag], axis=2)
 plt.figure(figsize=(5,3))
 for i, label in enumerate("LMS"):
     plt.plot(mat.a, median_distance_XYZ[i], lw=3, label=f"{label}-deficient")
+plt.axhline(distances_XYZ_regular_min, c='k', lw=3, label=f"Baseline ({distances_XYZ_regular_min:.2f})")
 plt.xlim(1, 0)
 plt.xticks([1, 0.75, 0.5, 0.25, 0])
 plt.ylim(0, 0.35)
