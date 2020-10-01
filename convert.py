@@ -68,6 +68,30 @@ plt.savefig("gamut.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
+# Plot xyY as function of a for several FU colours
+FU_deficient_xyY = np.concatenate((FU_deficient_xy, FU_deficient_XYZ[...,1][...,np.newaxis]), axis=3)
+fig, axs = plt.subplots(nrows=3, ncols=3, figsize=(10,5), sharex=True, sharey=True)
+for i, (ax_col, def_xyY, cone) in enumerate(zip(axs.T, FU_deficient_xyY, "LMS")):
+    for k, ax in enumerate(ax_col):
+        for f in [1, 5, 11, 16, 21]:
+            ax.plot(mat.a, def_xyY[:,f-1,k], label=f"FU {f:>2}", lw=3)
+        ax.grid(ls="--", color="0.7")
+    ax_col[0].set_title(f"{cone} deficiency")
+for ax in axs[:,1:].ravel():
+    ax.tick_params(axis="y", left=False, labelleft=False)
+for ax, ylabel in zip(axs[:,0], "xyY"):
+    ax.set_ylabel(ylabel)
+axs[0,0].set_xlim(1, 0)
+for ax in axs[2]:
+    ax.set_xlabel("$a$")
+    ax.set_xticks([1, 0.75, 0.5, 0.25, 0])
+for ax in axs[:2].ravel():
+    ax.tick_params(axis="x", bottom=False, labelbottom=False)
+axs[1,2].legend(loc="upper left", bbox_to_anchor=(1, 1))
+plt.savefig("xyY.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
+
 # Hue angles
 FU_deficient_alpha = np.arctan2(FU_deficient_xy[...,1]-1/3, FU_deficient_xy[...,0]-1/3) % (2*np.pi)
 FU_deficient_alpha_deg = np.rad2deg(FU_deficient_alpha)
