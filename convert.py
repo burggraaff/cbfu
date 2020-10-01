@@ -160,7 +160,25 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
     plt.close()
 
 # Distance matrices - XYZ
-plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours in $XYZ$", ylabel="XYZ")
+plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours in XYZ", ylabel="XYZ")
 
 # Distance matrices - xy
-plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours in $xy$", ylabel="xy")
+plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours in xy", ylabel="xy")
+
+# Median XYZ distance as a function of a
+median_distance_XYZ = np.median(distances_XYZ, axis=(2,3))
+
+plt.figure(figsize=(5,3))
+for i, label in enumerate("LMS"):
+    plt.plot(mat.a, median_distance_XYZ[i], lw=3, label=f"{label}-deficient")
+plt.xlim(1, 0)
+plt.xticks([1, 0.75, 0.5, 0.25, 0])
+plt.ylim(0, 0.35)
+plt.grid(ls="--", c="0.7")
+plt.xlabel("$a$")
+plt.ylabel("Median distance in XYZ")
+plt.title("Median Euclidean distances between FU colours")
+plt.legend(loc="best")
+plt.savefig("distance_median.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
