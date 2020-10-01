@@ -180,6 +180,10 @@ distances_xy_regular_min = np.min(distances_xy_regular[off_diag])
 median_distance_XYZ = np.median(distances_XYZ[...,off_diag], axis=2)
 median_distance_xy = np.median(distances_xy[...,off_diag], axis=2)
 
+# Minimum distance as a function of a
+min_distance_XYZ = np.min(distances_XYZ[...,off_diag], axis=2)
+min_distance_xy = np.min(distances_xy[...,off_diag], axis=2)
+
 # Plot distance statistics
 def plot_distances(distances, baseline=0, statistic_label="", coordinate_label="", saveto="image.pdf"):
     plt.figure(figsize=(5,3))
@@ -198,5 +202,10 @@ def plot_distances(distances, baseline=0, statistic_label="", coordinate_label="
     plt.show()
     plt.close()
 
+# Plot median distances
 plot_distances(median_distance_XYZ, baseline=distances_XYZ_regular_min, statistic_label="Median", coordinate_label="XYZ", saveto="distance_median_XYZ.pdf")
 plot_distances(median_distance_xy, baseline=distances_xy_regular_min, statistic_label="Median", coordinate_label="xy", saveto="distance_median_xy.pdf")
+
+# Plot minimum distances
+plot_distances(min_distance_XYZ, baseline=distances_XYZ_regular_min, statistic_label="Minimum", coordinate_label="XYZ", saveto="distance_min_XYZ.pdf")
+plot_distances(min_distance_xy, baseline=distances_xy_regular_min, statistic_label="Minimum", coordinate_label="xy", saveto="distance_min_xy.pdf")
