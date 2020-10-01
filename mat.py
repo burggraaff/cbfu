@@ -22,6 +22,11 @@ M_xyz_e_to_lms = np.array([[ 0.38971, 0.68898, -0.07868],
 
 M_lms_to_xyz_e = np.linalg.inv(M_xyz_e_to_lms)
 
+# http://www.brucelindbloom.com/index.html?Eqn_ChromAdapt.html - Bradford
+M_xyz_e_to_xyz_d65 = np.array([[ 0.9531874, -0.0265906,  0.0238731],
+                               [-0.0382467,  1.0288406,  0.0094060],
+                               [ 0.0026068, -0.0030332,  1.0892565]])
+
 red_RGB = np.array([1,0,0])
 blue_RGB = np.array([0,0,1])
 white_RGB = np.array([1,1,1])
