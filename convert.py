@@ -176,21 +176,27 @@ distances_XYZ_regular_min = np.min(distances_XYZ_regular[off_diag])
 distances_xy_regular = distances_xy[0,-1]
 distances_xy_regular_min = np.min(distances_xy_regular[off_diag])
 
-# Median XYZ distance as a function of a
+# Median distance as a function of a
 median_distance_XYZ = np.median(distances_XYZ[...,off_diag], axis=2)
+median_distance_xy = np.median(distances_xy[...,off_diag], axis=2)
 
-plt.figure(figsize=(5,3))
-for i, label in enumerate("LMS"):
-    plt.plot(mat.a, median_distance_XYZ[i], lw=3, label=f"{label}-deficient")
-plt.axhline(distances_XYZ_regular_min, c='k', lw=3, label=f"Baseline ({distances_XYZ_regular_min:.2f})")
-plt.xlim(1, 0)
-plt.xticks([1, 0.75, 0.5, 0.25, 0])
-plt.ylim(0, 0.35)
-plt.grid(ls="--", c="0.7")
-plt.xlabel("$a$")
-plt.ylabel("Median distance in XYZ")
-plt.title("Median Euclidean distances between FU colours")
-plt.legend(loc="best")
-plt.savefig("distance_median.pdf", bbox_inches="tight")
-plt.show()
-plt.close()
+# Plot distance statistics
+def plot_distances(distances, baseline=0, statistic_label="", coordinate_label="", saveto="image.pdf"):
+    plt.figure(figsize=(5,3))
+    for i, label in enumerate("LMS"):
+        plt.plot(mat.a, distances[i], lw=3, label=f"{label}-deficient")
+    plt.axhline(baseline, c='k', lw=3, label=f"Baseline ({baseline:.3f})")
+    plt.xlim(1, 0)
+    plt.xticks([1, 0.75, 0.5, 0.25, 0])
+    plt.ylim(ymin=0)
+    plt.grid(ls="--", c="0.7")
+    plt.xlabel("$a$")
+    plt.ylabel(f"{statistic_label} distance in {coordinate_label}")
+    plt.title(f"{statistic_label} Euclidean distances between FU colours ({coordinate_label})")
+    plt.legend(loc="best")
+    plt.savefig(saveto, bbox_inches="tight")
+    plt.show()
+    plt.close()
+
+plot_distances(median_distance_XYZ, baseline=distances_XYZ_regular_min, statistic_label="Median", coordinate_label="XYZ", saveto="distance_median_XYZ.pdf")
+plot_distances(median_distance_xy, baseline=distances_xy_regular_min, statistic_label="Median", coordinate_label="xy", saveto="distance_median_xy.pdf")
