@@ -160,7 +160,7 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
     plt.close()
 
 # Distance matrices - XYZ
-plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours", ylabel="XYZ")
+plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours in $XYZ$", ylabel="XYZ")
 
 # Distance matrices - xy
-plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours", ylabel="xy")
+plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours in $xy$", ylabel="xy")
