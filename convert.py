@@ -92,6 +92,21 @@ plt.savefig("xyY.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
+# Plot x vs Y for all FU colours at full deficiency
+plt.figure(figsize=(5,2))
+plt.plot(*FU_deficient_xyY[0,-1,:,::2].T, "o-", lw=3, label="Regular")
+for i, label in enumerate("LMS"):
+    plt.plot(*FU_deficient_xyY[i,0,:,::2].T, "o-", lw=3, label=f"{label}-deficient")
+plt.xlim(0, 0.55)
+plt.ylim(0, 0.55)
+plt.xlabel("$x$")
+plt.ylabel("$Y$")
+plt.title("Forel-Ule $x$ vs $Y$ for various cone deficiencies")
+plt.legend(loc="best")
+plt.savefig("xY.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
+
 # Hue angles
 FU_deficient_alpha = np.arctan2(FU_deficient_xy[...,1]-1/3, FU_deficient_xy[...,0]-1/3) % (2*np.pi)
 FU_deficient_alpha_deg = np.rad2deg(FU_deficient_alpha)
