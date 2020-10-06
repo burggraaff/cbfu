@@ -18,8 +18,8 @@ example_indices = ((0, 0, 0, 1, 1, 2, 2), (-1, 50, 0, 50, 0, 50, 0))
 examples_sRGB = FU_deficient_sRGB[example_indices]
 examples_labels = ["Regular", "50% L-deficient", "Fully L-deficient", "50% M-deficient", "Fully M-deficient", "50% S-deficient", "Fully S-deficient"]
 
-kwargs = {"width": 0.95, "height": 0.95, "edgecolor": "none"}
-fig, ax = plt.subplots(figsize=(9, 3))
+kwargs = {"width": 0.92, "height": 0.92, "edgecolor": "none"}
+fig, ax = plt.subplots(figsize=(7, 2.3))
 for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::-1])):
     print(i, label)
     rectangles = [patches.Rectangle(xy=(j,i), facecolor=rgb, **kwargs) for j, rgb in enumerate(FU_list)]
@@ -48,7 +48,7 @@ plt.close()
 FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
 
 # Plot chromaticities on gamut
-fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(10,5.2), sharex=True, sharey=True)
+fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(7,4), sharex=True, sharey=True)
 axs[0,0].axis("off")
 for ax, xy, label in zip(axs.ravel()[1:], FU_deficient_xy[example_indices], examples_labels):
     plt.sca(ax)
@@ -95,7 +95,7 @@ plt.show()
 plt.close()
 
 # Plot x vs Y for all FU colours at full deficiency
-plt.figure(figsize=(5,2))
+plt.figure(figsize=(7,2))
 plt.plot(*FU_deficient_xyY[0,-1,:,::2].T, "o-", lw=3, label="Regular")
 for i, label in enumerate("LMS"):
     plt.plot(*FU_deficient_xyY[i,0,:,::2].T, "o-", lw=3, label=f"{label}-deficient")
@@ -103,6 +103,7 @@ plt.xlim(0, 0.55)
 plt.ylim(0, 0.55)
 plt.xlabel("$x$")
 plt.ylabel("$Y$")
+plt.grid(ls="--", color="0.7")
 plt.title("Forel-Ule $x$ vs $Y$ for various cone deficiencies")
 plt.legend(loc="best")
 plt.savefig("xY.pdf", bbox_inches="tight")
