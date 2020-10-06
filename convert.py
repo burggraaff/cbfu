@@ -210,3 +210,10 @@ plot_distances(median_distance_xy, baseline=distances_xy_regular_min, statistic_
 # Plot minimum distances
 plot_distances(min_distance_XYZ, baseline=distances_XYZ_regular_min, statistic_label="Minimum", coordinate_label="XYZ", saveto="distance_min_XYZ.pdf")
 plot_distances(min_distance_xy, baseline=distances_xy_regular_min, statistic_label="Minimum", coordinate_label="xy", saveto="distance_min_xy.pdf")
+
+# Plot all distances
+fig, axs = plt.subplots(nrows=21, ncols=21, sharex=True, sharey=True, figsize=(7,7))
+# Diagonal from lower left to upper right
+# Upper left triangle: absolute distances
+# Lower right triangle: relative distances
+# Diagonal: regular colour + label
