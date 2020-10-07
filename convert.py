@@ -138,7 +138,7 @@ distances_XYZ = distance_matrix(FU_deficient_XYZ)
 distances_xy = distance_matrix(FU_deficient_xy)
 
 # Plot distance matrices
-def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="XYZ", **kwargs):
+def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", **kwargs):
     fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(10,5.2))
     for ax, distances, label in zip(axs.ravel()[1:], FU_distance_matrices[example_indices], examples_labels):
         im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap="cividis", **kwargs)
@@ -153,7 +153,7 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
     cb = fig.colorbar(im, cax=cax, orientation="vertical")
     cax.set_aspect("equal")
     cax.tick_params(axis="y", left=True, labelleft=True, right=False, labelright=False)
-    cax.set_ylabel(f"Euclidean distance ({ylabel})")
+    cax.set_ylabel(ylabel)
     cax.yaxis.set_label_position("left")
     fig.suptitle(title)
     plt.savefig(saveto, bbox_inches="tight")
@@ -161,10 +161,10 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
     plt.close()
 
 # Distance matrices - XYZ
-plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours in XYZ", ylabel="XYZ")
+plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours in XYZ", ylabel="Euclidean distance (XYZ)")
 
 # Distance matrices - xy
-plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours in xy", ylabel="xy")
+plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours in xy", ylabel="Euclidean distance (xy)")
 
 # Matrices to select diagonal and off-diagonal elements
 diag = np.eye(21, dtype=bool)
@@ -210,6 +210,16 @@ plot_distances(median_distance_xy, baseline=distances_xy_regular_min, statistic_
 # Plot minimum distances
 plot_distances(min_distance_XYZ, baseline=distances_XYZ_regular_min, statistic_label="Minimum", coordinate_label="XYZ", saveto="distance_min_XYZ.pdf")
 plot_distances(min_distance_xy, baseline=distances_xy_regular_min, statistic_label="Minimum", coordinate_label="xy", saveto="distance_min_xy.pdf")
+
+# Calculate distances relative to regular vision
+rel_distances_XYZ = distances_XYZ / distances_XYZ_regular * 100  # %
+rel_distances_xy = distances_xy / distances_xy_regular * 100  # %
+
+# Relative distances matrices
+plot_distance_matrices(rel_distances_XYZ, saveto="distance_matrix_XYZ_relative.pdf", vmin=0, vmax=100, title="Relative Euclidean distances between Forel-Ule colours in XYZ", ylabel="Relative\nEuclidean distance (XYZ, %)")
+
+plot_distance_matrices(rel_distances_xy, saveto="distance_matrix_xy_relative.pdf", vmin=0, vmax=100, title="Relative Euclidean distances between Forel-Ule colours in xy", ylabel="Relative\nEuclidean distance (xy, %)")
+
 
 # # Plot all distances
 # fig, axs = plt.subplots(nrows=21, ncols=21, sharex=True, sharey=True, figsize=(20,20))
