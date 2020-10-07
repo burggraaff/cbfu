@@ -213,12 +213,15 @@ plot_distances(min_distance_xy, baseline=distances_xy_regular_min, statistic_lab
 
 # Plot all distances
 fig, axs = plt.subplots(nrows=21, ncols=21, sharex=True, sharey=True, figsize=(20,20))
+axs = axs[::-1]  # Orientation of diagonal
 for i in range(21):
-    rect = patches.Rectangle(xy=(0,0), facecolor=FU_deficient_sRGB[0,-1,i], **kwargs)
+    rect = patches.Rectangle(xy=(0,0), facecolor=FU_deficient_sRGB[0,-1,i], width=1, height=1, edgecolor="none")
     axs[i,i].add_patch(rect)
     for j in range(i+1, 21):
         for dist in distances_XYZ[...,i,j]:
             axs[i,j].plot(mat.a, dist)
+for ax in axs.ravel():
+    ax.tick_params(axis="both", left=False, labelleft=False, bottom=False, labelbottom=False)
 axs[0,0].set_xlim(1, 0)
 plt.savefig("mega.pdf", bbox_inches="tight")
 plt.show()
