@@ -215,10 +215,38 @@ plot_distances(min_distance_xy, baseline=distances_xy_regular_min, statistic_lab
 rel_distances_XYZ = distances_XYZ / distances_XYZ_regular * 100  # %
 rel_distances_xy = distances_xy / distances_xy_regular * 100  # %
 
+# Calculate change in distances relative to regular vision
+diff_distances_XYZ = rel_distances_XYZ - 100.
+diff_distances_xy = rel_distances_xy - 100.
+
 # Relative distances matrices
 plot_distance_matrices(rel_distances_XYZ, saveto="distance_matrix_XYZ_relative.pdf", vmin=0, vmax=100, title="Relative Euclidean distances between Forel-Ule colours in XYZ", ylabel="Relative\nEuclidean distance (XYZ, %)")
 
 plot_distance_matrices(rel_distances_xy, saveto="distance_matrix_xy_relative.pdf", vmin=0, vmax=100, title="Relative Euclidean distances between Forel-Ule colours in xy", ylabel="Relative\nEuclidean distance (xy, %)")
+
+# Combined absolute and relative distance matrix plot
+extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
+extreme_labels = ["Regular", "L-deficient", "M-deficient", "S-deficient"]
+fig, axs = plt.subplots(nrows=3, ncols=4, figsize=(10,7))
+for ax, distances_absolute, label in zip(axs[0], distances_XYZ[extreme_indices], extreme_labels):
+    im_abs = ax.imshow(distances_absolute, extent=(0, 21, 21, 0), cmap="cividis", vmin=0, vmax=0.9)
+    ax.set_title(f"\n{label}")
+for ax, distances_relative, label in zip(axs[1], rel_distances_XYZ[extreme_indices], extreme_labels):
+    im_rel = ax.imshow(distances_relative, extent=(0, 21, 21, 0), cmap="cividis", vmin=0, vmax=100)
+for ax, distances_diff, label in zip(axs[2], diff_distances_XYZ[extreme_indices], extreme_labels):
+    im_rel = ax.imshow(distances_diff, extent=(0, 21, 21, 0), cmap="cividis", vmin=0, vmax=50)
+for ax in axs.ravel():
+    ax.set_xlim(0, 21)
+    ax.set_ylim(0, 21)
+    ax.set_xticks([0.5, 10.5, 20.5])
+    ax.set_xticklabels([1, 11, 21])
+    ax.set_yticks([0.5, 10.5, 20.5])
+    ax.set_yticklabels([1, 11, 21])
+fig.suptitle("Euclidean distances between Forel-Ule colours in XYZ")
+plt.savefig("distance_matrix_combined_XYZ.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
+
 
 
 # # Plot all distances
