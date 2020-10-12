@@ -217,8 +217,8 @@ rel_distances_XYZ = distances_XYZ / distances_XYZ_regular * 100  # %
 rel_distances_xy = distances_xy / distances_xy_regular * 100  # %
 
 # Calculate change in distances relative to regular vision
-diff_distances_XYZ = 100. - rel_distances_XYZ
-diff_distances_xy = 100. - rel_distances_xy
+diff_distances_XYZ = rel_distances_XYZ - 100.
+diff_distances_xy = rel_distances_xy - 100.
 
 # Calculate distances relative to minimum in regular vision
 distances_XYZ_div_min = distances_XYZ / distances_XYZ_regular_min * 100.
@@ -247,7 +247,7 @@ def plot_distance_matrices_combined(absolute_distances, difference_distances, mi
     cbar_abs.set_label_text("Euclidean distance")
 
     for ax, distances_diff, label in zip(grid[4:8], difference_distances[extreme_indices], extreme_labels):
-        im_diff = ax.imshow(distances_diff, vmin=0, vmax=50, **kwargs)
+        im_diff = ax.imshow(distances_diff, vmin=-50, vmax=0, **kwargs)
     cbar_diff = grid.cbar_axes[1].colorbar(im_diff)
     cbar_diff.set_label_text("$\Delta$ distance (%)")
 
