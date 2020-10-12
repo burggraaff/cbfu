@@ -5,6 +5,7 @@ from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches
 from scipy.spatial import minkowski_distance
 from colorio._tools import plot_flat_gamut
+from mpl_toolkits.axes_grid1 import AxesGrid
 
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz_e, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
@@ -216,8 +217,14 @@ rel_distances_XYZ = distances_XYZ / distances_XYZ_regular * 100  # %
 rel_distances_xy = distances_xy / distances_xy_regular * 100  # %
 
 # Calculate change in distances relative to regular vision
-diff_distances_XYZ = rel_distances_XYZ - 100.
-diff_distances_xy = rel_distances_xy - 100.
+diff_distances_XYZ = 100. - rel_distances_XYZ
+diff_distances_xy = 100. - rel_distances_xy
+
+# Calculate distances relative to minimum in regular vision
+distances_XYZ_div_min = distances_XYZ / distances_XYZ_regular_min * 100.
+distances_xy_div_min = distances_xy / distances_xy_regular_min * 100.
+distances_XYZ_div_min[...,diag] = np.nan
+distances_xy_div_min[...,diag] = np.nan
 
 # Relative distances matrices
 plot_distance_matrices(rel_distances_XYZ, saveto="distance_matrix_XYZ_relative.pdf", vmin=0, vmax=100, title="Relative Euclidean distances between Forel-Ule colours in XYZ", ylabel="Relative\nEuclidean distance (XYZ, %)")
@@ -227,22 +234,33 @@ plot_distance_matrices(rel_distances_xy, saveto="distance_matrix_xy_relative.pdf
 # Combined absolute and relative distance matrix plot
 extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
 extreme_labels = ["Regular", "L-deficient", "M-deficient", "S-deficient"]
-fig, axs = plt.subplots(nrows=3, ncols=4, figsize=(10,7))
-for ax, distances_absolute, label in zip(axs[0], distances_XYZ[extreme_indices], extreme_labels):
+fig = plt.figure(figsize=(10,7))
+grid = AxesGrid(fig, 111, nrows_ncols=(3,4), axes_pad=0.15, cbar_mode="edge", cbar_location="right", cbar_pad=0.15)
+
+for ax, distances_absolute, label in zip(grid[:4], distances_XYZ[extreme_indices], extreme_labels):
     im_abs = ax.imshow(distances_absolute, extent=(0, 21, 21, 0), cmap="cividis", vmin=0, vmax=0.9)
     ax.set_title(f"\n{label}")
-for ax, distances_relative, label in zip(axs[1], rel_distances_XYZ[extreme_indices], extreme_labels):
-    im_rel = ax.imshow(distances_relative, extent=(0, 21, 21, 0), cmap="cividis", vmin=0, vmax=100)
-for ax, distances_diff, label in zip(axs[2], diff_distances_XYZ[extreme_indices], extreme_labels):
-    im_rel = ax.imshow(distances_diff, extent=(0, 21, 21, 0), cmap="cividis", vmin=0, vmax=50)
-for ax in axs.ravel():
+cbar_abs = grid.cbar_axes[0].colorbar(im_abs)
+cbar_abs.set_label_text("Euclidean distance")
+
+for ax, distances_diff, label in zip(grid[4:8], diff_distances_XYZ[extreme_indices], extreme_labels):
+    im_diff = ax.imshow(distances_diff, extent=(0, 21, 21, 0), cmap="cividis", vmin=0, vmax=50)
+cbar_diff = grid.cbar_axes[1].colorbar(im_diff)
+cbar_diff.set_label_text("$\Delta$ distance (%)")
+
+for ax, distances_min, label in zip(grid[8:], distances_XYZ_div_min[extreme_indices], extreme_labels):
+    im_min = ax.imshow(distances_min, extent=(0, 21, 21, 0), cmap="cividis", vmin=0, vmax=100)
+cbar_min = grid.cbar_axes[2].colorbar(im_min)
+cbar_min.set_label_text("Distance/Minimum (%)")
+
+for ax in grid:
     ax.set_xlim(0, 21)
     ax.set_ylim(0, 21)
     ax.set_xticks([0.5, 10.5, 20.5])
     ax.set_xticklabels([1, 11, 21])
     ax.set_yticks([0.5, 10.5, 20.5])
     ax.set_yticklabels([1, 11, 21])
-fig.suptitle("Euclidean distances between Forel-Ule colours in XYZ")
+fig.suptitle("Changes in Euclidean distances between Forel-Ule colours in XYZ")
 plt.savefig("distance_matrix_combined_XYZ.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
