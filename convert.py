@@ -55,8 +55,10 @@ plt.close()
 
 # Chromaticities
 FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
+FU_mono_xy = FU_mono_XYZ[...,:2] / FU_mono_XYZ.sum(axis=1)[...,np.newaxis]
 
 # Plot chromaticities on gamut
+# TO DO: Move regular to [0,0], put monochromatic in [0,1]
 fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(7,4), sharex=True, sharey=True)
 axs[0,0].axis("off")
 for ax, xy, label in zip(axs.ravel()[1:], FU_deficient_xy[example_indices], examples_labels):
@@ -81,6 +83,8 @@ plt.close()
 
 # Plot xyY as function of a for several FU colours
 FU_deficient_xyY = np.concatenate((FU_deficient_xy, FU_deficient_XYZ[...,1][...,np.newaxis]), axis=3)
+FU_mono_xyY = np.concatenate((FU_mono_xy, FU_mono_XYZ[...,1][...,np.newaxis]), axis=1)
+
 fig, axs = plt.subplots(nrows=3, ncols=3, figsize=(10,5), sharex=True, sharey=True)
 for i, (ax_col, def_xyY, cone) in enumerate(zip(axs.T, FU_deficient_xyY, "LMS")):
     for k, ax in enumerate(ax_col):
@@ -108,6 +112,7 @@ plt.figure(figsize=(7,2))
 plt.plot(*FU_deficient_xyY[0,-1,:,::2].T, "o-", lw=3, label="Regular")
 for i, label in enumerate("LMS"):
     plt.plot(*FU_deficient_xyY[i,0,:,::2].T, "o-", lw=3, label=f"{label}-deficient")
+plt.plot(*FU_mono_xyY[:,::2].T, "o-", lw="3", c="k", label="Monochromatic")
 plt.xlim(0, 0.55)
 plt.ylim(0, 0.55)
 plt.xlabel("$x$")
@@ -145,6 +150,8 @@ def distance_matrix(FU_deficient_array):
 
 distances_XYZ = distance_matrix(FU_deficient_XYZ)
 distances_xy = distance_matrix(FU_deficient_xy)
+distances_XYZ_mono = minkowski_distance(FU_mono_XYZ[:,np.newaxis], FU_mono_XYZ[np.newaxis,:])
+distances_xy_mono = minkowski_distance(FU_mono_xy[:,np.newaxis], FU_mono_xy[np.newaxis,:])
 
 # Plot distance matrices
 def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", **kwargs):
@@ -195,11 +202,13 @@ min_distance_XYZ = np.min(distances_XYZ[...,off_diag], axis=2)
 min_distance_xy = np.min(distances_xy[...,off_diag], axis=2)
 
 # Plot distance statistics
-def plot_distances(distances, baseline=0, statistic_label="", coordinate_label="", saveto="image.pdf"):
+def plot_distances(distances, distances_mono=-1, baseline=0, statistic_label="", coordinate_label="", saveto="image.pdf"):
     plt.figure(figsize=(5,3))
     for i, label in enumerate("LMS"):
         plt.plot(mat.a, distances[i], lw=3, label=f"{label}-deficient")
-    plt.axhline(baseline, c='k', lw=3, label=f"Baseline ({baseline:.3f})")
+    if distances_mono is not None:
+        plt.plot(mat.a, np.tile(distances_mono, len(mat.a)), lw=3, c="k", label="Monochromatic")
+    plt.axhline(baseline, c='k', lw=3, ls="--", label=f"Baseline ({baseline:.3f})")
     plt.xlim(1, 0)
     plt.xticks([1, 0.75, 0.5, 0.25, 0])
     plt.ylim(ymin=0)
@@ -213,12 +222,12 @@ def plot_distances(distances, baseline=0, statistic_label="", coordinate_label="
     plt.close()
 
 # Plot median distances
-plot_distances(median_distance_XYZ, baseline=distances_XYZ_regular_min, statistic_label="Median", coordinate_label="XYZ", saveto="distance_median_XYZ.pdf")
-plot_distances(median_distance_xy, baseline=distances_xy_regular_min, statistic_label="Median", coordinate_label="xy", saveto="distance_median_xy.pdf")
+plot_distances(median_distance_XYZ, distances_mono=np.median(distances_XYZ_mono[off_diag]), baseline=distances_XYZ_regular_min, statistic_label="Median", coordinate_label="XYZ", saveto="distance_median_XYZ.pdf")
+plot_distances(median_distance_xy, distances_mono=np.median(distances_xy_mono[off_diag]), baseline=distances_xy_regular_min, statistic_label="Median", coordinate_label="xy", saveto="distance_median_xy.pdf")
 
 # Plot minimum distances
-plot_distances(min_distance_XYZ, baseline=distances_XYZ_regular_min, statistic_label="Minimum", coordinate_label="XYZ", saveto="distance_min_XYZ.pdf")
-plot_distances(min_distance_xy, baseline=distances_xy_regular_min, statistic_label="Minimum", coordinate_label="xy", saveto="distance_min_xy.pdf")
+plot_distances(min_distance_XYZ, distances_mono=np.min(distances_XYZ_mono[off_diag]), baseline=distances_XYZ_regular_min, statistic_label="Minimum", coordinate_label="XYZ", saveto="distance_min_XYZ.pdf")
+plot_distances(min_distance_xy, distances_mono=np.min(distances_XYZ_mono[off_diag]), baseline=distances_xy_regular_min, statistic_label="Minimum", coordinate_label="xy", saveto="distance_min_xy.pdf")
 
 # Calculate distances relative to regular vision
 rel_distances_XYZ = distances_XYZ / distances_XYZ_regular * 100  # %
