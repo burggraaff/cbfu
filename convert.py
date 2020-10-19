@@ -5,6 +5,7 @@ from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches
 from scipy.spatial import minkowski_distance
 from colorio._tools import plot_flat_gamut
+from mpl_toolkits.axes_grid1 import AxesGrid
 
 # Single cone deficiencies
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
@@ -56,7 +57,7 @@ plt.close()
 FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
 
 # Plot chromaticities on gamut
-fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(10,5.2), sharex=True, sharey=True)
+fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(7,4), sharex=True, sharey=True)
 axs[0,0].axis("off")
 for ax, xy, label in zip(axs.ravel()[1:], FU_deficient_xy[example_indices], examples_labels):
     plt.sca(ax)
@@ -103,7 +104,7 @@ plt.show()
 plt.close()
 
 # Plot x vs Y for all FU colours at full deficiency
-plt.figure(figsize=(5,2))
+plt.figure(figsize=(7,2))
 plt.plot(*FU_deficient_xyY[0,-1,:,::2].T, "o-", lw=3, label="Regular")
 for i, label in enumerate("LMS"):
     plt.plot(*FU_deficient_xyY[i,0,:,::2].T, "o-", lw=3, label=f"{label}-deficient")
@@ -111,6 +112,7 @@ plt.xlim(0, 0.55)
 plt.ylim(0, 0.55)
 plt.xlabel("$x$")
 plt.ylabel("$Y$")
+plt.grid(ls="--", color="0.7")
 plt.title("Forel-Ule $x$ vs $Y$ for various cone deficiencies")
 plt.legend(loc="best")
 plt.savefig("xY.pdf", bbox_inches="tight")
@@ -145,7 +147,7 @@ distances_XYZ = distance_matrix(FU_deficient_XYZ)
 distances_xy = distance_matrix(FU_deficient_xy)
 
 # Plot distance matrices
-def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="XYZ", **kwargs):
+def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", **kwargs):
     fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(10,5.2))
     for ax, distances, label in zip(axs.ravel()[1:], FU_distance_matrices[example_indices], examples_labels):
         im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap="cividis", **kwargs)
@@ -160,7 +162,7 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
     cb = fig.colorbar(im, cax=cax, orientation="vertical")
     cax.set_aspect("equal")
     cax.tick_params(axis="y", left=True, labelleft=True, right=False, labelright=False)
-    cax.set_ylabel(f"Euclidean distance ({ylabel})")
+    cax.set_ylabel(ylabel)
     cax.yaxis.set_label_position("left")
     fig.suptitle(title)
     plt.savefig(saveto, bbox_inches="tight")
@@ -168,10 +170,10 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
     plt.close()
 
 # Distance matrices - XYZ
-plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours in XYZ", ylabel="XYZ")
+plot_distance_matrices(distances_XYZ, saveto="distance_matrix_XYZ.pdf", vmin=0, vmax=0.9, title="Euclidean distances between Forel-Ule colours in XYZ", ylabel="Euclidean distance (XYZ)")
 
 # Distance matrices - xy
-plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours in xy", ylabel="xy")
+plot_distance_matrices(distances_xy, saveto="distance_matrix_xy.pdf", vmin=0, vmax=0.45, title="Euclidean distances between Forel-Ule colours in xy", ylabel="Euclidean distance (xy)")
 
 # Matrices to select diagonal and off-diagonal elements
 diag = np.eye(21, dtype=bool)
@@ -218,4 +220,82 @@ plot_distances(median_distance_xy, baseline=distances_xy_regular_min, statistic_
 plot_distances(min_distance_XYZ, baseline=distances_XYZ_regular_min, statistic_label="Minimum", coordinate_label="XYZ", saveto="distance_min_XYZ.pdf")
 plot_distances(min_distance_xy, baseline=distances_xy_regular_min, statistic_label="Minimum", coordinate_label="xy", saveto="distance_min_xy.pdf")
 
-# Plot all distances in 21x21 triangular plot?
+# Calculate distances relative to regular vision
+rel_distances_XYZ = distances_XYZ / distances_XYZ_regular * 100  # %
+rel_distances_xy = distances_xy / distances_xy_regular * 100  # %
+
+# Calculate change in distances relative to regular vision
+diff_distances_XYZ = rel_distances_XYZ - 100.
+diff_distances_xy = rel_distances_xy - 100.
+
+# Calculate distances relative to minimum in regular vision
+distances_XYZ_div_min = distances_XYZ / distances_XYZ_regular_min * 100.
+distances_xy_div_min = distances_xy / distances_xy_regular_min * 100.
+distances_XYZ_div_min[...,diag] = np.nan
+distances_xy_div_min[...,diag] = np.nan
+
+# Relative distances matrices
+plot_distance_matrices(rel_distances_XYZ, saveto="distance_matrix_XYZ_relative.pdf", vmin=0, vmax=100, title="Relative Euclidean distances between Forel-Ule colours in XYZ", ylabel="Relative\nEuclidean distance (XYZ, %)")
+
+plot_distance_matrices(rel_distances_xy, saveto="distance_matrix_xy_relative.pdf", vmin=0, vmax=100, title="Relative Euclidean distances between Forel-Ule colours in xy", ylabel="Relative\nEuclidean distance (xy, %)")
+
+# Combined absolute and relative distance matrix plot
+def plot_distance_matrices_combined(absolute_distances, difference_distances, min_relative_distances, saveto="image.pdf", title="",):
+    extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
+    extreme_labels = ["Regular", "L-deficient", "M-deficient", "S-deficient"]
+    fig = plt.figure(figsize=(10,7))
+    grid = AxesGrid(fig, 111, nrows_ncols=(3,4), axes_pad=0.15, cbar_mode="edge", cbar_location="right", cbar_pad=0.15)
+    kwargs = {"extent": (0, 21, 21, 0), "cmap": "cividis"}
+
+    vmax = np.nanmax(absolute_distances[extreme_indices])
+    for ax, distances_absolute, label in zip(grid[:4], absolute_distances[extreme_indices], extreme_labels):
+        im_abs = ax.imshow(distances_absolute, vmin=0, vmax=vmax, **kwargs)
+        ax.set_title(f"\n{label}")
+    cbar_abs = grid.cbar_axes[0].colorbar(im_abs)
+    cbar_abs.set_label_text("Euclidean distance")
+
+    for ax, distances_diff, label in zip(grid[4:8], difference_distances[extreme_indices], extreme_labels):
+        im_diff = ax.imshow(distances_diff, vmin=-50, vmax=0, **kwargs)
+    cbar_diff = grid.cbar_axes[1].colorbar(im_diff)
+    cbar_diff.set_label_text("$\Delta$ distance (%)")
+
+    for ax, distances_min, label in zip(grid[8:], min_relative_distances[extreme_indices], extreme_labels):
+        im_min = ax.imshow(distances_min, vmin=0, vmax=100, **kwargs)
+    cbar_min = grid.cbar_axes[2].colorbar(im_min)
+    cbar_min.set_label_text("Distance / Minimum (%)")
+
+    for ax in grid:
+        ax.set_xlim(0, 21)
+        ax.set_ylim(0, 21)
+        ax.set_xticks([0.5, 10.5, 20.5])
+        ax.set_xticklabels([1, 11, 21])
+        ax.set_yticks([0.5, 10.5, 20.5])
+        ax.set_yticklabels([1, 11, 21])
+
+    fig.suptitle(title)
+    plt.savefig(saveto, bbox_inches="tight")
+    plt.show()
+    plt.close()
+
+plot_distance_matrices_combined(distances_XYZ, diff_distances_XYZ, distances_XYZ_div_min, title="Changes in Euclidean distances between Forel-Ule colours in XYZ", saveto="distance_matrix_combined_XYZ.pdf")
+plot_distance_matrices_combined(distances_xy, diff_distances_xy, distances_xy_div_min, title="Changes in Euclidean distances between Forel-Ule colours in xy", saveto="distance_matrix_combined_xy.pdf")
+
+# # Plot all distances
+# fig, axs = plt.subplots(nrows=21, ncols=21, sharex=True, sharey=True, figsize=(20,20))
+# axs = axs[::-1]  # Orientation of diagonal
+# for i in range(21):
+#     rect = patches.Rectangle(xy=(0,0), facecolor=FU_deficient_sRGB[0,-1,i], width=1, height=1, edgecolor="none")
+#     axs[i,i].add_patch(rect)
+#     for j in range(i+1, 21):
+#         for dist in distances_XYZ[...,i,j]:
+#             axs[i,j].plot(mat.a, dist)
+# for ax in axs.ravel():
+#     ax.tick_params(axis="both", left=False, labelleft=False, bottom=False, labelbottom=False)
+# axs[0,0].set_xlim(1, 0)
+# plt.savefig("mega.pdf", bbox_inches="tight")
+# plt.show()
+# plt.close()
+# # Diagonal from lower left to upper right
+# # Upper left triangle: absolute distances
+# # Lower right triangle: relative distances
+# # Diagonal: regular colour + label
