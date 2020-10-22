@@ -291,3 +291,5 @@ plot_distance_matrices_combined(distances_xy, diff_distances_xy, distances_xy_di
 # # Upper left triangle: absolute distances
 # # Lower right triangle: relative distances
 # # Diagonal: regular colour + label
+
+FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)

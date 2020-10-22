@@ -67,3 +67,22 @@ SLMS = np.stack([SL, SM, SS]) # Axes: deficiency (lms), a, i, j
 S_mono_cone = np.array([[0, 0, 1],
                         [0, 0, 1],
                         [0, 0, 1]])
+
+
+# Convert CIE XYZ to CIE L*a*b*
+# https://en.wikipedia.org/wiki/CIELAB_color_space#Forward_transformation
+def XYZ_to_Lab(XYZ, Xn=1., Yn=1., Zn=1.):
+    @np.vectorize
+    def f(t):
+        delta = 6/29
+        f = t**(1/3) if t > delta**3 else (t/(3*delta**2) + 4/29)
+        return f
+
+    X, Y, Z = XYZ[...,0], XYZ[...,1], XYZ[...,2]
+
+    Lstar = 116 * f(Y/Yn) - 16
+    astar = 500 * (f(X/Xn) - f(Y/Yn))
+    bstar = 200 * (f(Y/Yn) - f(Z/Zn))
+
+    Lab = np.stack([Lstar, astar, bstar], axis=-1)
+    return Lab
