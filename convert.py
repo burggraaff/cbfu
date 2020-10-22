@@ -293,3 +293,37 @@ plot_distance_matrices_combined(distances_xy, diff_distances_xy, distances_xy_di
 # # Diagonal: regular colour + label
 
 FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)
+
+# Plot a* vs L* for all FU colours at full deficiency
+plt.figure(figsize=(7,2))
+plt.plot(*FU_deficient_lab[0,-1,:,1::-1].T, "o-", lw=3, label="Regular")
+for i, label in enumerate("LMS"):
+    plt.plot(*FU_deficient_lab[i,0,:,1::-1].T, "o-", lw=3, label=f"{label}-deficient")
+# plt.xlim(0, 0.55)
+# plt.ylim(0, 0.55)
+plt.xlabel("$a^*$")
+plt.ylabel("$L^*$")
+plt.grid(ls="--", color="0.7")
+plt.title("Forel-Ule $a^*$ vs $L^*$ for various cone deficiencies")
+plt.legend(loc="best")
+plt.savefig("aL.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
+
+# Plot L*, a*, b* as a function of FU at full deficiency
+ylabels = ["$L^*$", "$a^*$", "$b^*$"]
+fig, axs = plt.subplots(nrows=3, figsize=(4,4), sharex=True)
+for k, (ax, ylabel) in enumerate(zip(axs, ylabels)):
+    ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, label="Regular")
+    for i, label in enumerate("LMS"):
+        ax.plot(fu.numbers, FU_deficient_lab[i,0,:,k].T, "o-", lw=3, label=f"{label}-deficient")
+    ax.set_ylabel(ylabel)
+    ax.grid(ls="--", color="0.7")
+axs[0].set_xlim(0.9, 21.1)
+axs[0].set_xticks([1, 5, 10, 15, 20])
+axs[-1].set_xlabel("Forel-Ule color")
+axs[0].set_title("Forel-Ule colors in $L^* a^* b^*$ space")
+axs[1].legend(loc="upper left", bbox_to_anchor=(1,1.08))
+plt.savefig("FU_Lab.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
