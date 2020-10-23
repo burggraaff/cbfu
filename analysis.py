@@ -6,6 +6,10 @@ from matplotlib import pyplot as plt, patches
 from colorio._tools import plot_flat_gamut
 from mpl_toolkits.axes_grid1 import AxesGrid
 
+# Applied Optics column widths
+col1 = 3.25
+col2 = 5.75
+
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz_e, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
 
@@ -18,8 +22,9 @@ example_indices = ((0, 0, 0, 1, 1, 2, 2), (-1, 50, 0, 50, 0, 50, 0))
 examples_sRGB = FU_deficient_sRGB[example_indices]
 examples_labels = ["Regular", "50% L-deficient", "Fully L-deficient", "50% M-deficient", "Fully M-deficient", "50% S-deficient", "Fully S-deficient"]
 
-kwargs = {"width": 0.92, "height": 0.92, "edgecolor": "none"}
-fig, ax = plt.subplots(figsize=(7, 2.3))
+# color squares plot
+kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
+fig, ax = plt.subplots(figsize=(col2, 2))
 for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::-1])):
     print(i, label)
     rectangles = [patches.Rectangle(xy=(j,i), facecolor=rgb, **kwargs) for j, rgb in enumerate(FU_list)]
@@ -33,7 +38,7 @@ ax.tick_params(axis="y", left=False, pad=0)
 
 ax.set_xticks(np.arange(kwargs["width"]/2, 21, 1))
 ax.set_xticklabels(fu.numbers)
-ax.set_xlabel("Forel-Ule colour")
+ax.set_xlabel("Forel-Ule color")
 ax.tick_params(axis="x", bottom=False, labelbottom=False, labeltop=True)
 ax.xaxis.set_label_position("top")
 for tick in ax.xaxis.get_major_ticks():
@@ -48,12 +53,12 @@ plt.close()
 FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
 
 # Plot chromaticities on gamut
-fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(7,4), sharex=True, sharey=True)
+fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(col2,4), sharex=True, sharey=True)
 axs[0,0].axis("off")
 for ax, xy, label in zip(axs.ravel()[1:], FU_deficient_xy[example_indices], examples_labels):
     plt.sca(ax)
     plot_flat_gamut(plot_planckian_locus=False, axes_labels=("", ""))
-    ax.scatter(*xy.T, c="k", marker="o", s=4, label="FU colours")
+    ax.scatter(*xy.T, c="k", marker="o", s=4, label="FU colors")
     ax.plot(*xy.T, c="k")
     ax.set_title(label)
 for ax in axs[0,1:]:
@@ -65,7 +70,7 @@ for ax in np.concatenate((axs[0,2:], axs[1,1:])):
 axs[0,1].tick_params(axis="y", left=True, labelleft=True)
 axs[0,1].set_ylabel("y")
 axs[1,0].set_ylabel("y")
-fig.suptitle("Forel-Ule colour gamut for various cone deficiencies")
+fig.suptitle("Forel-Ule color gamut for various cone deficiencies")
 plt.savefig("gamut.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
@@ -78,7 +83,7 @@ off_diag = ~diag
 def plot_distance_matrices_combined(absolute_distances, difference_distances, min_relative_distances, saveto="image.pdf", title="",):
     extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
     extreme_labels = ["Regular", "L-deficient", "M-deficient", "S-deficient"]
-    fig = plt.figure(figsize=(10,7))
+    fig = plt.figure(figsize=(col2,7))
     grid = AxesGrid(fig, 111, nrows_ncols=(3,4), axes_pad=0.15, cbar_mode="edge", cbar_location="right", cbar_pad=0.15)
     kwargs = {"extent": (0, 21, 21, 0), "cmap": "cividis"}
 
@@ -114,8 +119,8 @@ def plot_distance_matrices_combined(absolute_distances, difference_distances, mi
 
 FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)
 
-# Plot a* vs L* for all FU colours at full deficiency
-plt.figure(figsize=(7,2))
+# Plot a* vs L* for all FU colors at full deficiency
+plt.figure(figsize=(col2,2))
 plt.plot(*FU_deficient_lab[0,-1,:,1::-1].T, "o-", lw=3, label="Regular")
 for i, label in enumerate("LMS"):
     plt.plot(*FU_deficient_lab[i,0,:,1::-1].T, "o-", lw=3, label=f"{label}-deficient")
@@ -132,7 +137,7 @@ plt.close()
 
 # Plot L*, a*, b* as a function of FU at full deficiency
 ylabels = ["$L^*$", "$a^*$", "$b^*$"]
-fig, axs = plt.subplots(nrows=3, figsize=(4,4), sharex=True)
+fig, axs = plt.subplots(nrows=3, figsize=(col1,4), sharex=True)
 for k, (ax, ylabel) in enumerate(zip(axs, ylabels)):
     ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, label="Regular")
     for i, label in enumerate("LMS"):
@@ -157,10 +162,13 @@ distances_Lab = mat.dE00(L1, a1, b1, L2, a2, b2)
 distances_Lab_regular = distances_Lab[0,-1]
 distances_Lab_JND = distances_Lab/mat.JND
 
+extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
+extreme_labels = ["Regular", "L-def.", "M-def.", "S-def."]
+
 # Plot distance matrices
 def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", **kwargs):
-    fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(10,5.2))
-    for ax, distances, label in zip(axs.ravel()[1:], FU_distance_matrices[example_indices], examples_labels):
+    fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(col2,5), gridspec_kw={"wspace": 0.3, "hspace": 0.3})
+    for ax, distances, label in zip(axs.ravel(), FU_distance_matrices[extreme_indices], extreme_labels):
         im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap="cividis", **kwargs)
         ax.set_title(f"\n{label}")
         ax.set_xlim(0, 21)
@@ -169,20 +177,18 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
         ax.set_xticklabels([1, 11, 21])
         ax.set_yticks([0.5, 10.5, 20.5])
         ax.set_yticklabels([1, 11, 21])
-    cax = axs.ravel()[0]
-    cb = fig.colorbar(im, cax=cax, orientation="vertical")
-    cax.set_aspect("equal")
-    cax.tick_params(axis="y", left=True, labelleft=True, right=False, labelright=False)
+    fig.subplots_adjust(right=0.8)
+    cax = fig.add_axes([0.83, 0.15, 0.05, 0.7])
+    fig.colorbar(im, cax=cax, orientation="vertical")
     cax.set_ylabel(ylabel)
-    cax.yaxis.set_label_position("left")
     fig.suptitle(title)
     plt.savefig(saveto, bbox_inches="tight")
     plt.show()
     plt.close()
 
 # Plot distance matrices
-plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$")
-plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$ / JND")
+plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colors", ylabel="$\Delta E_{00}$")
+plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND")
 
 # Distance as a function of a
 median_distance_Lab = np.median(distances_Lab[...,off_diag], axis=2)
@@ -192,7 +198,7 @@ min_distance_Lab = np.min(distances_Lab[...,off_diag], axis=2)
 nr_under_JND = (np.sum(distances_Lab_JND[...,off_diag] < 1, axis=2))//2
 
 # Combined plot of distance statistics
-fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(3.25,5))
+fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(col1,5))
 for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$JND"]):
     for i, label in enumerate("LMS"):
         ax.plot(mat.a, dist[i], lw=3, label=f"{label}-def.")
