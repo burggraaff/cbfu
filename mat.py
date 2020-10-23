@@ -86,3 +86,70 @@ def XYZ_to_Lab(XYZ, Xn=1., Yn=1., Zn=1.):
 
     Lab = np.stack([Lstar, astar, bstar], axis=-1)
     return Lab
+
+# Calculate CIE Delta E00 distance
+# doi 10.1002/col.20070
+@np.vectorize
+def hue(ap, bs):
+    return 0. if ap == bs == 0. else np.rad2deg(np.arctan2(bs, ap)) % 360
+
+@np.vectorize
+def delta_hue(h1, h2, Cprime1, Cprime2):
+    if Cprime1 * Cprime2 == 0:
+        dh = 0
+    elif np.abs(h2 - h1) <= 180:
+        dh = h2 - h1
+    elif h2 - h1 > 180:
+        dh = h2 - h1 - 360
+    else:
+        dh = h2 - h1 + 360
+    return dh
+
+@np.vectorize
+def hprimebar(hprime1, hprime2, Cprime1, Cprime2):
+    if Cprime1 * Cprime2 == 0:
+        hpb = hprime1 + hprime2
+    elif np.abs(hprime1 - hprime2) <= 180:
+        hpb = (hprime1 + hprime2) / 2
+    elif np.abs(hprime1 - hprime2) > 180 and hprime1 + hprime2 < 360:
+        hpb = (hprime1 + hprime2 + 360) / 2
+    else:
+        hpb = (hprime1 + hprime2 - 360) / 2
+    return hpb
+
+@np.vectorize
+def dE00(L1, a1, b1, L2, a2, b2, kL=1., kC=1., kH=1.):
+    L, a, b = np.array([L1, L2]), np.array([a1, a2]), np.array([b1, b2])
+
+    C = np.sqrt(a**2 + b**2)
+    Cbar = C.mean()
+    G = 0.5 * (1 - np.sqrt(Cbar**7 / (Cbar**7 + 25**7)))
+    aprime = (1 + G) * a
+    Cprime = np.sqrt(aprime**2 + b**2)
+
+    h = hue(aprime, b)
+
+    dL = L2 - L1
+    dCprime = Cprime[1] - Cprime[0]
+
+    dh = delta_hue(*h, *Cprime)
+    dH = 2 * np.sqrt(Cprime[0] * Cprime[1]) * np.sin(np.deg2rad(dh)/2)
+
+    Lprimebar = L.mean()
+    Cprimebar = Cprime.mean()
+
+    hbar = hprimebar(*h, *Cprime)
+
+    T = 1 - 0.17*np.cos(np.deg2rad(hbar-30)) + 0.24*np.cos(np.deg2rad(2*hbar)) + 0.32*np.cos(np.deg2rad(3*hbar+6)) - 0.20*np.cos(np.deg2rad(4*hbar-63))
+
+    dtheta = 30 * np.exp(-((hbar-275)/25)**2)
+
+    Rc = 2*np.sqrt(Cprimebar**7 / (Cprimebar**7 + 25**7))
+
+    SL = 1 + (0.015 * (Lprimebar - 50)**2) / np.sqrt(20 + (Lprimebar - 50)**2)
+    SC = 1 + 0.045 * Cprimebar
+    SH = 1 + 0.015 * Cprimebar * T
+    RT = -np.sin(np.deg2rad(2*dtheta)) * Rc
+
+    dE00 = np.sqrt((dL/(kL * SL))**2 + (dCprime/(kC * SC))**2 + (dH/(kH * SH))**2 + RT * (dCprime/(kC*SC)) * (dH/(kH*SH)))
+    return dE00
