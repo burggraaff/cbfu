@@ -1,5 +1,6 @@
 import numpy as np
 
+JND = 2.3
 
 
 M_rgb_to_xyz = np.array([[0.4124564, 0.3575761, 0.1804375],

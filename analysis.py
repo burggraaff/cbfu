@@ -181,6 +181,7 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
 
 # Plot distance matrices
 plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$")
+plot_distance_matrices(distances_Lab/mat.JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$ / JND")
 
 # Distance as a function of a
 median_distance_Lab = np.median(distances_Lab[...,off_diag], axis=2)
@@ -191,14 +192,14 @@ fig, axs = plt.subplots(nrows=2, sharex=True, figsize=(4,4))
 for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab], ["Median", "Minimum"]):
     for i, label in enumerate("LMS"):
         ax.plot(mat.a, dist[i], lw=3, label=f"{label}-deficient")
-    ax.axhline(2.3, c='k', lw=3, ls="dotted", label="JND (2.3)")
+    ax.axhline(mat.JND, c='k', lw=3, ls="dotted", label=f"JND ({mat.JND})")
     ax.set_ylim(ymin=0)
     ax.grid(ls="--", c="0.7")
     ax.set_ylabel(ylabel+" $\Delta E_{00}$")
 axs[1].set_xlim(1, 0)
 axs[1].set_xticks([1, 0.75, 0.5, 0.25, 0])
 axs[1].set_xlabel("Relative cone contribution $a$")
-axs[0].set_title("Median/Minimum $\Delta E_{00}$ between FU colors\nwith decreasing $a$")
+axs[0].set_title("Median/Minimum $\Delta E_{00}$ between FU colors")
 axs[1].legend(loc="best", ncol=2)
 fig.align_labels()
 plt.savefig("distance_stats_Lab.pdf", bbox_inches="tight")
