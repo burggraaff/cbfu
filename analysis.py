@@ -155,6 +155,7 @@ L2, a2, b2 = FU_deficient_lab[...,0][:,:,:,np.newaxis], FU_deficient_lab[...,1][
 
 distances_Lab = mat.dE00(L1, a1, b1, L2, a2, b2)
 distances_Lab_regular = distances_Lab[0,-1]
+distances_Lab_JND = distances_Lab/mat.JND
 
 # Plot distance matrices
 def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", **kwargs):
@@ -181,25 +182,30 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
 
 # Plot distance matrices
 plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$")
-plot_distance_matrices(distances_Lab/mat.JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$ / JND")
+plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$ / JND")
 
 # Distance as a function of a
 median_distance_Lab = np.median(distances_Lab[...,off_diag], axis=2)
 min_distance_Lab = np.min(distances_Lab[...,off_diag], axis=2)
 
+# Number of pairs that are less than a JND apart
+nr_under_JND = (np.sum(distances_Lab_JND[...,off_diag] < 1, axis=2))//2
+
 # Combined plot of distance statistics
-fig, axs = plt.subplots(nrows=2, sharex=True, figsize=(4,4))
-for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab], ["Median", "Minimum"]):
+fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(3.25,5))
+for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$JND"]):
     for i, label in enumerate("LMS"):
-        ax.plot(mat.a, dist[i], lw=3, label=f"{label}-deficient")
-    ax.axhline(mat.JND, c='k', lw=3, ls="dotted", label=f"JND ({mat.JND})")
+        ax.plot(mat.a, dist[i], lw=3, label=f"{label}-def.")
     ax.set_ylim(ymin=0)
     ax.grid(ls="--", c="0.7")
-    ax.set_ylabel(ylabel+" $\Delta E_{00}$")
-axs[1].set_xlim(1, 0)
-axs[1].set_xticks([1, 0.75, 0.5, 0.25, 0])
-axs[1].set_xlabel("Relative cone contribution $a$")
-axs[0].set_title("Median/Minimum $\Delta E_{00}$ between FU colors")
+    ax.set_ylabel(ylabel)
+for ax in axs[:2]:
+    ax.axhline(mat.JND, c='k', lw=3, ls="dotted", label=f"JND")
+axs[2].set_yticks([0,2,4,6])
+axs[-1].set_xlim(1, 0)
+axs[-1].set_xticks([1, 0.75, 0.5, 0.25, 0])
+axs[-1].set_xlabel("Relative cone contribution $a$")
+axs[0].set_title("$\Delta E_{00}$ between FU colors")
 axs[1].legend(loc="best", ncol=2)
 fig.align_labels()
 plt.savefig("distance_stats_Lab.pdf", bbox_inches="tight")
