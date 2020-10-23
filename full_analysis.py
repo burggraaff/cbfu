@@ -337,7 +337,7 @@ distances_Lab = mat.dE00(L1, a1, b1, L2, a2, b2)
 distances_Lab_regular = distances_Lab[0,-1]
 
 # Plot distance matrices
-plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, vmax=0.9, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$")
+plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$")
 
 # Distance as a function of a
 median_distance_Lab = np.median(distances_Lab[...,off_diag], axis=2)
