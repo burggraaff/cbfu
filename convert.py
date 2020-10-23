@@ -331,6 +331,38 @@ plt.close()
 # Calculate Delta E 00
 # doi 10.1002/col.20070
 
+L1, a1, b1 = FU_deficient_lab[...,0][:,:,np.newaxis,:], FU_deficient_lab[...,1][:,:,np.newaxis,:], FU_deficient_lab[...,2][:,:,np.newaxis,:]
+L2, a2, b2 = FU_deficient_lab[...,0][:,:,:,np.newaxis], FU_deficient_lab[...,1][:,:,:,np.newaxis], FU_deficient_lab[...,2][:,:,:,np.newaxis]
+
+@np.vectorize
+def hue(ap, bs):
+    return 0. if ap == bs == 0. else np.rad2deg(np.arctan2(bs, ap)) % 360
+
+@np.vectorize
+def delta_hue(h1, h2, Cprime1, Cprime2):
+    if Cprime1 * Cprime2 == 0:
+        dh = 0
+    elif np.abs(h2 - h1) <= 180:
+        dh = h2 - h1
+    elif h2 - h1 > 180:
+        dh = h2 - h1 - 360
+    else:
+        dh = h2 - h1 + 360
+    return dh
+
+@np.vectorize
+def hprimebar(hprime1, hprime2, Cprime1, Cprime2):
+    if Cprime1 * Cprime2 == 0:
+        hpb = hprime1 + hprime2
+    elif np.abs(hprime1 - hprime2) <= 180:
+        hpb = (hprime1 + hprime2) / 2
+    elif np.abs(hprime1 - hprime2) > 180 and hprime1 + hprime2 < 360:
+        hpb = (hprime1 + hprime2 + 360) / 2
+    else:
+        hpb = (hprime1 + hprime2 - 360) / 2
+    return hpb
+
+@np.vectorize
 def dE00(L1, a1, b1, L2, a2, b2, kL=1., kC=1., kH=1.):
     L, a, b = np.array([L1, L2]), np.array([a1, a2]), np.array([b1, b2])
 
@@ -340,44 +372,16 @@ def dE00(L1, a1, b1, L2, a2, b2, kL=1., kC=1., kH=1.):
     aprime = (1 + G) * a
     Cprime = np.sqrt(aprime**2 + b**2)
 
-    @np.vectorize
-    def hue(ap, bs):
-        return 0. if ap == bs == 0. else np.rad2deg(np.arctan2(bs, ap)) % 360
-
     h = hue(aprime, b)
 
     dL = L2 - L1
     dCprime = Cprime[1] - Cprime[0]
-
-    @np.vectorize
-    def delta_hue(h1, h2, Cprime1, Cprime2):
-        if Cprime1 * Cprime2 == 0:
-            dh = 0
-        elif np.abs(h2 - h1) <= 180:
-            dh = h2 - h1
-        elif h2 - h1 > 180:
-            dh = h2 - h1 - 360
-        else:
-            dh = h2 - h1 + 360
-        return dh
 
     dh = delta_hue(*h, *Cprime)
     dH = 2 * np.sqrt(Cprime[0] * Cprime[1]) * np.sin(np.deg2rad(dh)/2)
 
     Lprimebar = L.mean()
     Cprimebar = Cprime.mean()
-
-    @np.vectorize
-    def hprimebar(hprime1, hprime2, Cprime1, Cprime2):
-        if Cprime1 * Cprime2 == 0:
-            hpb = hprime1 + hprime2
-        elif np.abs(hprime1 - hprime2) <= 180:
-            hpb = (hprime1 + hprime2) / 2
-        elif np.abs(hprime1 - hprime2) > 180 and hprime1 + hprime2 < 360:
-            hpb = (hprime1 + hprime2 + 360) / 2
-        else:
-            hpb = (hprime1 + hprime2 - 360) / 2
-        return hpb
 
     hbar = hprimebar(*h, *Cprime)
 
