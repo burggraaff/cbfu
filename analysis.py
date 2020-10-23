@@ -218,11 +218,20 @@ plt.savefig("distance_stats_Lab.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
-# Find pairs that are < JND
-for data, label in zip(distances_Lab_JND[extreme_indices], extreme_labels):
-    matching_pairs = np.array(np.where(data <= 1)).T
+def find_matching_pairs(data, threshold):
+    matching_pairs = np.array(np.where(data <= threshold)).T
     matching_pairs = matching_pairs[matching_pairs[:,0] != matching_pairs[:,1]]  # Remove diagonals
     matching_pairs = np.sort(matching_pairs) # Sort horizontally, eg [1, 0] becomes [0, 1]
     matching_pairs = np.unique(matching_pairs, axis=0) # Remove duplicates
     matching_pairs += 1 # From index to FU color
-    print(f"{label} vision:\n{matching_pairs}\n")
+    return matching_pairs
+
+# Find pairs that are < JND
+for data, label in zip(distances_Lab_JND[extreme_indices], extreme_labels):
+    matching_pairs_1 = find_matching_pairs(data, 1)
+    print(f"{label} vision:\n{matching_pairs_1}\n")
+
+# Find pairs that are almost < JND
+for data, label in zip(distances_Lab_JND[extreme_indices], extreme_labels):
+    matching_pairs_2 = find_matching_pairs(data, 1.2)
+    print(f"{label} vision:\n{matching_pairs_2}\n")
