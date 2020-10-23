@@ -398,3 +398,17 @@ def dE00(L1, a1, b1, L2, a2, b2, kL=1., kC=1., kH=1.):
 
     dE00 = np.sqrt((dL/(kL * SL))**2 + (dCprime/(kC * SC))**2 + (dH/(kH * SH))**2 + RT * (dCprime/(kC*SC)) * (dH/(kH*SH)))
     return dE00
+
+distances_Lab = dE00(L1, a1, b1, L2, a2, b2)
+distances_Lab_regular = distances_Lab[0,-1]
+
+# Plot distance matrices
+plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, vmax=0.9, title="CIE $L^*a^*b^*$ distances between Forel-Ule colours", ylabel="$\Delta E_{00}$")
+
+# Distance as a function of a
+median_distance_Lab = np.median(distances_Lab[...,off_diag], axis=2)
+min_distance_Lab = np.min(distances_Lab[...,off_diag], axis=2)
+
+# Plot min & median distances
+plot_distances(median_distance_Lab, baseline=2.3, statistic_label="Median", coordinate_label="XYZ", saveto="distance_median_Lab.pdf")
+plot_distances(min_distance_Lab, baseline=2.3, statistic_label="Minimum", coordinate_label="XYZ", saveto="distance_min_Lab.pdf")
