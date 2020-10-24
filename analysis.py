@@ -2,7 +2,7 @@ import numpy as np
 import mat
 import fu
 from spectacle.linearity import sRGB_generic
-from matplotlib import pyplot as plt, patches
+from matplotlib import pyplot as plt, patches, cm
 from colorio._tools import plot_flat_gamut
 from mpl_toolkits.axes_grid1 import AxesGrid
 
@@ -169,7 +169,7 @@ extreme_labels = ["Regular", "L-def.", "M-def.", "S-def."]
 def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", **kwargs):
     fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(col2,5), gridspec_kw={"wspace": 0.3, "hspace": 0.3})
     for ax, distances, label in zip(axs.ravel(), FU_distance_matrices[extreme_indices], extreme_labels):
-        im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap="cividis", **kwargs)
+        im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap=cm.get_cmap("cividis", 5), **kwargs)
         ax.set_title(f"\n{label}")
         ax.set_xlim(0, 21)
         ax.set_ylim(0, 21)
