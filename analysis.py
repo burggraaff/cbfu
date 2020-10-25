@@ -119,22 +119,6 @@ def plot_distance_matrices_combined(absolute_distances, difference_distances, mi
 
 FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)
 
-# Plot a* vs L* for all FU colors at full deficiency
-plt.figure(figsize=(col2,2))
-plt.plot(*FU_deficient_lab[0,-1,:,1::-1].T, "o-", lw=3, label="Regular")
-for i, label in enumerate("LMS"):
-    plt.plot(*FU_deficient_lab[i,0,:,1::-1].T, "o-", lw=3, label=f"{label}-deficient")
-# plt.xlim(0, 0.55)
-# plt.ylim(0, 0.55)
-plt.xlabel("$a^*$")
-plt.ylabel("$L^*$")
-plt.grid(ls="--", color="0.7")
-plt.title("Forel-Ule $a^*$ vs $L^*$ for various cone deficiencies")
-plt.legend(loc="best")
-plt.savefig("aL.pdf", bbox_inches="tight")
-plt.show()
-plt.close()
-
 # Plot L*, a*, b* as a function of FU at full deficiency
 ylabels = ["$L^*$", "$a^*$", "$b^*$"]
 fig, axs = plt.subplots(nrows=3, figsize=(col1,4), sharex=True)
