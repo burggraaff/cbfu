@@ -20,9 +20,9 @@ FU_deficient_sRGB = sRGB_generic(FU_deficient_RGB, normalization=1)/255. # Gamma
 
 example_indices = ((0, 0, 0, 1, 1, 2, 2), (-1, 50, 0, 50, 0, 50, 0))
 examples_sRGB = FU_deficient_sRGB[example_indices]
-examples_labels = ["Regular", "50% L-deficient", "Fully L-deficient", "50% M-deficient", "Fully M-deficient", "50% S-deficient", "Fully S-deficient"]
+examples_labels = ["Regular", "50% L-def.", "Fully L-def.", "50% M-def.", "Fully M-def.", "50% S-def.", "Fully S-def."]
 
-# color squares plot
+# Color squares plot
 kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
 fig, ax = plt.subplots(figsize=(col2, 2))
 for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::-1])):
@@ -53,7 +53,7 @@ plt.close()
 FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
 
 # Plot chromaticities on gamut
-fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(col2,4), sharex=True, sharey=True)
+fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(col2,3.5), sharex=True, sharey=True)
 axs[0,0].axis("off")
 for ax, xy, label in zip(axs.ravel()[1:], FU_deficient_xy[example_indices], examples_labels):
     plt.sca(ax)
