@@ -82,19 +82,22 @@ off_diag = ~diag
 FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)
 
 # Plot L*, a*, b* as a function of FU at full deficiency
-ylabels = ["$L^*$", "$a^*$", "$b^*$"]
-fig, axs = plt.subplots(nrows=3, figsize=(col1,4), sharex=True)
+ylabels = ["L$^*$", "a$^*$", "b$^*$"]
+formats = ["^-", "s-", "p-"]
+fig, axs = plt.subplots(nrows=3, figsize=(col1,4), sharex=True, gridspec_kw={"hspace": 0.07})
 for k, (ax, ylabel) in enumerate(zip(axs, ylabels)):
     ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, label="Regular")
-    for i, label in enumerate("LMS"):
-        ax.plot(fu.numbers, FU_deficient_lab[i,0,:,k].T, "o-", lw=3, label=f"{label}-deficient")
+    for i, (label, fmt) in enumerate(zip("LMS", formats)):
+        ax.plot(fu.numbers, FU_deficient_lab[i,0,:,k].T, fmt, lw=3, label=f"{label}-def.")
     ax.set_ylabel(ylabel)
     ax.grid(ls="--", color="0.7")
+for ax in axs[:-1]:
+    ax.tick_params(axis="x", bottom=False, labelbottom=False)
 axs[0].set_xlim(0.9, 21.1)
 axs[0].set_xticks([1, 5, 10, 15, 20])
 axs[-1].set_xlabel("Forel-Ule color")
-axs[0].set_title("Forel-Ule colors in $L^* a^* b^*$ space")
-axs[1].legend(loc="upper left", bbox_to_anchor=(1,1.08))
+axs[0].set_title("Forel-Ule colors in CIE L$^*$a$^*$b$^*$ space")
+axs[2].legend(ncol=2, loc="center", bbox_to_anchor=(0.5,-0.8))
 fig.align_labels()
 plt.savefig("FU_Lab.pdf", bbox_inches="tight")
 plt.show()
