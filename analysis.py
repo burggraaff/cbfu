@@ -166,10 +166,10 @@ extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
 extreme_labels = ["Regular", "L-def.", "M-def.", "S-def."]
 
 # Plot distance matrices
-def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", **kwargs):
+def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", nr_samples=None, **kwargs):
     fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(col2,5), gridspec_kw={"wspace": 0.3, "hspace": 0.3})
     for ax, distances, label in zip(axs.ravel(), FU_distance_matrices[extreme_indices], extreme_labels):
-        im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap=cm.get_cmap("cividis", 5), **kwargs)
+        im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap=cm.get_cmap("cividis", nr_samples), **kwargs)
         ax.set_title(f"\n{label}")
         ax.set_xlim(0, 21)
         ax.set_ylim(0, 21)
@@ -189,6 +189,7 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
 # Plot distance matrices
 plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colors", ylabel="$\Delta E_{00}$")
 plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, title="CIE $L^*a^*b^*$ distances between Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND")
+plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND_zoom.pdf", vmin=0, vmax=4, nr_samples=4, title="CIE $L^*a^*b^*$ distances between Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND")
 
 # Distance as a function of a
 median_distance_Lab = np.median(distances_Lab[...,off_diag], axis=2)
