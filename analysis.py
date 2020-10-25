@@ -86,7 +86,7 @@ ylabels = ["L$^*$", "a$^*$", "b$^*$"]
 formats = ["^-", "s-", "p-"]
 fig, axs = plt.subplots(nrows=3, figsize=(col1,4), sharex=True, gridspec_kw={"hspace": 0.07})
 for k, (ax, ylabel) in enumerate(zip(axs, ylabels)):
-    ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, label="Regular")
+    ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, c='k', label="Regular")
     for i, (label, fmt) in enumerate(zip("LMS", formats)):
         ax.plot(fu.numbers, FU_deficient_lab[i,0,:,k].T, fmt, lw=3, label=f"{label}-def.")
     ax.set_ylabel(ylabel)
