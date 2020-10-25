@@ -212,11 +212,15 @@ def find_matching_pairs(data, threshold):
     return matching_pairs
 
 # Find pairs that are < JND
+print("Pairs within 1 JND from each other:")
 for data, label in zip(distances_Lab_JND[extreme_indices], extreme_labels):
     matching_pairs_1 = find_matching_pairs(data, 1)
     print(f"{label} vision:\n{matching_pairs_1}\n")
+print("-----")
 
 # Find pairs that are almost < JND
+threshold_close = 2
+print(f"Pairs within {threshold_close:.1f} JND from each other:")
 for data, label in zip(distances_Lab_JND[extreme_indices], extreme_labels):
-    matching_pairs_2 = find_matching_pairs(data, 1.2)
+    matching_pairs_2 = find_matching_pairs(data, threshold_close)
     print(f"{label} vision:\n{matching_pairs_2}\n")
