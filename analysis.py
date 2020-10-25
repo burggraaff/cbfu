@@ -79,44 +79,6 @@ plt.close()
 diag = np.eye(21, dtype=bool)
 off_diag = ~diag
 
-# Combined absolute and relative distance matrix plot
-def plot_distance_matrices_combined(absolute_distances, difference_distances, min_relative_distances, saveto="image.pdf", title="",):
-    extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
-    extreme_labels = ["Regular", "L-deficient", "M-deficient", "S-deficient"]
-    fig = plt.figure(figsize=(col2,7))
-    grid = AxesGrid(fig, 111, nrows_ncols=(3,4), axes_pad=0.15, cbar_mode="edge", cbar_location="right", cbar_pad=0.15)
-    kwargs = {"extent": (0, 21, 21, 0), "cmap": "cividis"}
-
-    vmax = np.nanmax(absolute_distances[extreme_indices])
-    for ax, distances_absolute, label in zip(grid[:4], absolute_distances[extreme_indices], extreme_labels):
-        im_abs = ax.imshow(distances_absolute, vmin=0, vmax=vmax, **kwargs)
-        ax.set_title(f"\n{label}")
-    cbar_abs = grid.cbar_axes[0].colorbar(im_abs)
-    cbar_abs.set_label_text("Euclidean distance")
-
-    for ax, distances_diff, label in zip(grid[4:8], difference_distances[extreme_indices], extreme_labels):
-        im_diff = ax.imshow(distances_diff, vmin=-50, vmax=0, **kwargs)
-    cbar_diff = grid.cbar_axes[1].colorbar(im_diff)
-    cbar_diff.set_label_text("$\Delta$ distance (%)")
-
-    for ax, distances_min, label in zip(grid[8:], min_relative_distances[extreme_indices], extreme_labels):
-        im_min = ax.imshow(distances_min, vmin=0, vmax=100, **kwargs)
-    cbar_min = grid.cbar_axes[2].colorbar(im_min)
-    cbar_min.set_label_text("Distance / Minimum (%)")
-
-    for ax in grid:
-        ax.set_xlim(0, 21)
-        ax.set_ylim(0, 21)
-        ax.set_xticks([0.5, 10.5, 20.5])
-        ax.set_xticklabels([1, 11, 21])
-        ax.set_yticks([0.5, 10.5, 20.5])
-        ax.set_yticklabels([1, 11, 21])
-
-    fig.suptitle(title)
-    plt.savefig(saveto, bbox_inches="tight")
-    plt.show()
-    plt.close()
-
 FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)
 
 # Plot L*, a*, b* as a function of FU at full deficiency
