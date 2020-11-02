@@ -136,8 +136,8 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
     plt.close()
 
 # Plot distance matrices
-plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, title="$\Delta E_{00}$ between Forel-Ule colors", ylabel="$\Delta E_{00}$")
-plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, title="$\Delta E_{00}$ between Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND")
+plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, vmax=50, title="$\Delta E_{00}$ between Forel-Ule colors", ylabel="$\Delta E_{00}$", nr_samples=10)
+plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, vmax=20, title="$\Delta E_{00}$ between Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND", nr_samples=8)
 plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND_zoom.pdf", vmin=0, vmax=4, nr_samples=4, title="Confusion matrix for Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND")
 
 # Distance as a function of a
