@@ -4,7 +4,6 @@ import fu
 from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches, cm
 from colorio._tools import plot_flat_gamut
-from mpl_toolkits.axes_grid1 import AxesGrid
 
 # Applied Optics column widths
 col1 = 3.25
