@@ -19,7 +19,10 @@ FU_deficient_sRGB = sRGB_generic(FU_deficient_RGB, normalization=1)/255. # Gamma
 
 example_indices = ((0, 0, 0, 1, 1, 2, 2), (-1, 50, 0, 50, 0, 50, 0))
 examples_sRGB = FU_deficient_sRGB[example_indices]
-examples_labels = ["Regular", "50% L-def.", "Fully L-def.", "50% M-def.", "Fully M-def.", "50% S-def.", "Fully S-def."]
+examples_labels = ["Regular", "Protanomaly", "Protanopia", "Deuteranomaly", "Deuteranopia", "Tritanomaly", "Tritanopia"]
+
+extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
+extreme_labels = ["Regular", "Protan", "Deuteran", "Tritan"]
 
 # Color squares plot
 kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
@@ -86,8 +89,8 @@ formats = ["^-", "s-", "p-"]
 fig, axs = plt.subplots(nrows=3, figsize=(col1,4), sharex=True, gridspec_kw={"hspace": 0.07})
 for k, (ax, ylabel) in enumerate(zip(axs, ylabels)):
     ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, c='k', label="Regular")
-    for i, (label, fmt) in enumerate(zip("LMS", formats)):
-        ax.plot(fu.numbers, FU_deficient_lab[i,0,:,k].T, fmt, lw=3, label=f"{label}-def.")
+    for i, (label, fmt) in enumerate(zip(extreme_labels[1:], formats)):
+        ax.plot(fu.numbers, FU_deficient_lab[i,0,:,k].T, fmt, lw=3, label=label)
     ax.set_ylabel(ylabel)
     ax.grid(ls="--", color="0.7")
 for ax in axs[:-1]:
@@ -109,9 +112,6 @@ L2, a2, b2 = FU_deficient_lab[...,0][:,:,:,np.newaxis], FU_deficient_lab[...,1][
 distances_Lab = mat.dE00(L1, a1, b1, L2, a2, b2)
 distances_Lab_regular = distances_Lab[0,-1]
 distances_Lab_JND = distances_Lab/mat.JND
-
-extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
-extreme_labels = ["Regular", "L-def.", "M-def.", "S-def."]
 
 # Plot distance matrices
 def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", nr_samples=None, **kwargs):
@@ -149,8 +149,8 @@ nr_under_JND = (np.sum(distances_Lab_JND[...,off_diag] < 1, axis=2))//2
 # Combined plot of distance statistics
 fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(col1,5))
 for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$JND"]):
-    for i, label in enumerate("LMS"):
-        ax.plot(mat.a, dist[i], lw=3, label=f"{label}-def.")
+    for i, label in enumerate(extreme_labels[1:]):
+        ax.plot(mat.a, dist[i], lw=3, label=label)
     ax.set_ylim(ymin=0)
     ax.grid(ls="--", c="0.7")
     ax.set_ylabel(ylabel)
