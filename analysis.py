@@ -3,6 +3,7 @@ import mat
 import fu
 from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches, cm
+from mpl_toolkits.axes_grid1 import AxesGrid
 from colorio._tools import plot_flat_gamut
 
 # Applied Optics column widths
@@ -138,6 +139,45 @@ def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", y
 plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, vmax=50, title="$\Delta E_{00}$ between Forel-Ule colors", ylabel="$\Delta E_{00}$", nr_samples=10)
 plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, vmax=20, title="$\Delta E_{00}$ between Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND", nr_samples=8)
 plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND_zoom.pdf", vmin=0, vmax=4, nr_samples=4, title="Confusion matrix for Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND")
+
+# Combined distance matrix plot
+fig = plt.figure(figsize=(col2, 3.2))
+grid = AxesGrid(fig, 111, nrows_ncols=(2, 4), axes_pad=0.1, cbar_mode="edge", cbar_location="right", cbar_pad=0.1, cbar_size="13%")
+for ax, dist, label in zip(grid.axes_row[0], distances_Lab[extreme_indices], extreme_labels):
+    im = ax.imshow(dist, extent=(0, 21, 21, 0), cmap=cm.get_cmap("cividis_r", 10), vmin=0, vmax=50)
+    ax.set_title(label)
+cbar = ax.cax.colorbar(im)
+cbar.cbar_axis.set_ticks(np.arange(0,51,10))
+cbar.ax.set_ylabel("$\Delta E_{00}$")
+
+for ax, dist in zip(grid.axes_row[1], distances_Lab_JND[extreme_indices]):
+    im = ax.imshow(dist, extent=(0, 21, 21, 0), cmap=cm.get_cmap("cividis_r", 4), vmin=0, vmax=4)
+cbar = ax.cax.colorbar(im)
+cbar.cbar_axis.set_ticks(np.arange(0,5,1))
+cbar.ax.set_ylabel("$\Delta E_{00}$ / JND")
+
+for ax in grid:
+    ax.set_xlim(0, 21)
+    ax.set_ylim(0, 21)
+    ax.set_xticks([0.5, 10.5, 20.5])
+    ax.set_xticklabels([1, 11, 21])
+    ax.set_yticks([0.5, 10.5, 20.5])
+    ax.set_yticklabels([1, 11, 21])
+
+for ax in np.ravel(grid.axes_column[1:]):
+    ax.tick_params("y", left=False, labelleft=False)
+for ax in grid.axes_row[0]:
+    ax.tick_params("x", bottom=False, labelbottom=False)
+
+for ax in grid.axes_column[0]:
+    ax.set_ylabel("FU")
+for ax in grid.axes_row[1]:
+    ax.set_xlabel("FU")
+
+fig.suptitle("Forel-Ule confusion matrix")
+plt.savefig("distance_matrix_combined.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
 
 # Distance as a function of a
 median_distance_Lab = np.median(distances_Lab[...,off_diag], axis=2)
