@@ -4,7 +4,6 @@ import fu
 from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches, cm
 from mpl_toolkits.axes_grid1 import AxesGrid
-from colorio._tools import plot_flat_gamut
 
 # Applied Optics column widths
 col1 = 3.25
@@ -23,7 +22,7 @@ examples_sRGB = FU_deficient_sRGB[example_indices]
 examples_labels = ["Regular", "Protanomaly", "Protanopia", "Deuteranomaly", "Deuteranopia", "Tritanomaly", "Tritanopia"]
 
 extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
-extreme_labels = ["Regular", "Protan", "Deuteran", "Tritan"]
+extreme_labels = ["Regular", "Protan", "Deutan", "Tritan"]
 
 # Color squares plot
 kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
@@ -49,32 +48,6 @@ for tick in ax.xaxis.get_major_ticks():
 
 plt.box()
 plt.savefig("FU_example.pdf", bbox_inches="tight")
-plt.show()
-plt.close()
-
-# Chromaticities
-FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
-
-# Plot chromaticities on gamut
-fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(col2,3.5), sharex=True, sharey=True)
-axs[0,0].axis("off")
-for ax, xy, label in zip(axs.ravel()[1:], FU_deficient_xy[example_indices], examples_labels):
-    plt.sca(ax)
-    plot_flat_gamut(plot_planckian_locus=False, axes_labels=("", ""))
-    ax.scatter(*xy.T, c="k", marker="o", s=4, label="FU colors")
-    ax.plot(*xy.T, c="k")
-    ax.set_title(label)
-for ax in axs[0,1:]:
-    ax.tick_params(axis="x", bottom=False, labelbottom=False)
-for ax in axs[1]:
-    ax.set_xlabel("x")
-for ax in np.concatenate((axs[0,2:], axs[1,1:])):
-    ax.tick_params(axis="y", left=False, labelleft=False)
-axs[0,1].tick_params(axis="y", left=True, labelleft=True)
-axs[0,1].set_ylabel("y")
-axs[1,0].set_ylabel("y")
-fig.suptitle("Forel-Ule color gamut for various cone deficiencies")
-plt.savefig("gamut.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
