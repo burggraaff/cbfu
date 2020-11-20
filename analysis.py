@@ -88,32 +88,6 @@ distances_Lab = mat.dE00(L1, a1, b1, L2, a2, b2)
 distances_Lab_regular = distances_Lab[0,-1]
 distances_Lab_JND = distances_Lab/mat.JND
 
-# Plot distance matrices
-def plot_distance_matrices(FU_distance_matrices, saveto="image.pdf", title="", ylabel="Euclidean distance (XYZ)", nr_samples=None, **kwargs):
-    fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(col2,5), gridspec_kw={"wspace": 0.3, "hspace": 0.3})
-    for ax, distances, label in zip(axs.ravel(), FU_distance_matrices[extreme_indices], extreme_labels):
-        im = ax.imshow(distances, extent=(0, 21, 21, 0), cmap=cm.get_cmap("cividis_r", nr_samples), **kwargs)
-        ax.set_title(f"\n{label}")
-        ax.set_xlim(0, 21)
-        ax.set_ylim(0, 21)
-        ax.set_xticks([0.5, 10.5, 20.5])
-        ax.set_xticklabels([1, 11, 21])
-        ax.set_yticks([0.5, 10.5, 20.5])
-        ax.set_yticklabels([1, 11, 21])
-    fig.subplots_adjust(right=0.8)
-    cax = fig.add_axes([0.83, 0.15, 0.05, 0.7])
-    fig.colorbar(im, cax=cax, orientation="vertical")
-    cax.set_ylabel(ylabel)
-    fig.suptitle(title)
-    plt.savefig(saveto, bbox_inches="tight")
-    plt.show()
-    plt.close()
-
-# Plot distance matrices
-plot_distance_matrices(distances_Lab, saveto="distance_matrix_Lab.pdf", vmin=0, vmax=50, title="$\Delta E_{00}$ between Forel-Ule colors", ylabel="$\Delta E_{00}$", nr_samples=10)
-plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND.pdf", vmin=0, vmax=20, title="$\Delta E_{00}$ between Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND", nr_samples=8)
-plot_distance_matrices(distances_Lab_JND, saveto="distance_matrix_Lab_JND_zoom.pdf", vmin=0, vmax=4, nr_samples=4, title="Confusion matrix for Forel-Ule colors", ylabel="$\Delta E_{00}$ / JND")
-
 # Combined distance matrix plot
 fig = plt.figure(figsize=(col2, 3.2))
 grid = AxesGrid(fig, 111, nrows_ncols=(2, 4), axes_pad=0.1, cbar_mode="edge", cbar_location="right", cbar_pad=0.1, cbar_size="13%")
@@ -159,22 +133,24 @@ min_distance_Lab = np.min(distances_Lab[...,off_diag], axis=2)
 
 # Number of pairs that are less than a JND apart
 nr_under_JND = (np.sum(distances_Lab_JND[...,off_diag] < 1, axis=2))//2
+nr_under_3_JND = (np.sum(distances_Lab_JND[...,off_diag] < 3, axis=2))//2
 
 # Combined plot of distance statistics
-fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(col1,5))
-for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$JND"]):
+fig, axs = plt.subplots(nrows=4, sharex=True, figsize=(col1,6))
+for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_3_JND, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$ 3 JND", "Pairs $<$JND"]):
     for i, (label, c) in enumerate(zip(extreme_labels[1:], colours)):
         ax.plot(mat.a, dist[i], lw=3, label=label, c=c)
     ax.set_ylim(ymin=0)
     ax.grid(ls="--", c="0.7")
     ax.set_ylabel(ylabel)
+    ax.set_ylim(0, np.nanmax(dist)*1.05)
+    ax.locator_params("y", nbins=5)
 for ax in axs[:2]:
     ax.axhline(mat.JND, c="#004D40", lw=3, ls="dotted", label=f"JND")
-axs[2].set_yticks([0,2,4,6])
 axs[-1].set_xlim(1, 0)
 axs[-1].set_xticks([1, 0.75, 0.5, 0.25, 0])
 axs[-1].set_xlabel("Relative cone contribution $a$")
-axs[0].set_title("Discrimination of FU colors")
+axs[0].set_title("Discriminability of FU colors")
 axs[1].legend(loc="best", ncol=2)
 fig.align_labels()
 plt.savefig("distance_stats_Lab.pdf", bbox_inches="tight")
