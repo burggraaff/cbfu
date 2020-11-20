@@ -60,11 +60,12 @@ FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)
 # Plot L*, a*, b* as a function of FU at full deficiency
 ylabels = ["L$^*$", "a$^*$", "b$^*$"]
 formats = ["^-", "s-", "p-"]
+colours = ["#D81B60", "#FFC107", "#1E88E5"]
 fig, axs = plt.subplots(nrows=3, figsize=(col1,4), sharex=True, gridspec_kw={"hspace": 0.07})
 for k, (ax, ylabel) in enumerate(zip(axs, ylabels)):
-    ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, c='k', label="Regular")
-    for i, (label, fmt) in enumerate(zip(extreme_labels[1:], formats)):
-        ax.plot(fu.numbers, FU_deficient_lab[i,0,:,k].T, fmt, lw=3, label=label)
+    ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, c="#004D40", label="Regular")
+    for i, (label, fmt, c) in enumerate(zip(extreme_labels[1:], formats, colours)):
+        ax.plot(fu.numbers, FU_deficient_lab[i,0,:,k].T, fmt, lw=3, label=label, c=c)
     ax.set_ylabel(ylabel)
     ax.grid(ls="--", color="0.7")
 for ax in axs[:-1]:
@@ -162,13 +163,13 @@ nr_under_JND = (np.sum(distances_Lab_JND[...,off_diag] < 1, axis=2))//2
 # Combined plot of distance statistics
 fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(col1,5))
 for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$JND"]):
-    for i, label in enumerate(extreme_labels[1:]):
-        ax.plot(mat.a, dist[i], lw=3, label=label)
+    for i, (label, c) in enumerate(zip(extreme_labels[1:], colours)):
+        ax.plot(mat.a, dist[i], lw=3, label=label, c=c)
     ax.set_ylim(ymin=0)
     ax.grid(ls="--", c="0.7")
     ax.set_ylabel(ylabel)
 for ax in axs[:2]:
-    ax.axhline(mat.JND, c='k', lw=3, ls="dotted", label=f"JND")
+    ax.axhline(mat.JND, c="#004D40", lw=3, ls="dotted", label=f"JND")
 axs[2].set_yticks([0,2,4,6])
 axs[-1].set_xlim(1, 0)
 axs[-1].set_xticks([1, 0.75, 0.5, 0.25, 0])
