@@ -4,6 +4,7 @@ import fu
 from spectacle.linearity import sRGB_generic
 from matplotlib import pyplot as plt, patches, cm
 from mpl_toolkits.axes_grid1 import AxesGrid
+from colorio._tools import plot_flat_gamut
 
 # Applied Optics column widths
 col1 = 3.25
@@ -51,6 +52,27 @@ plt.savefig("FU_example.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
+# Chromaticities
+FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
+
+# Plot chromaticities on gamut
+plt.figure(figsize=(col1,4))
+plot_flat_gamut(plot_planckian_locus=False, axes_labels=("", ""))
+plt.scatter(*FU_deficient_xy[0,-1].T, c="k", marker="o", s=25)
+plt.plot(*FU_deficient_xy[0,-1].T, c="k")
+rectangles = [patches.Rectangle(xy=(-1,-1), facecolor=rgb, label=j, **kwargs) for j, rgb in enumerate(examples_sRGB[0], start=1)]
+for rect in rectangles:
+    plt.gca().add_patch(rect)
+plt.xlim(-0.05, 0.75)
+plt.ylim(-0.05, 0.9)
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title("Forel-Ule scale")
+plt.legend(loc="upper left", ncol=3, bbox_to_anchor=(0, -0.15), frameon=False, markerfirst=False, fontsize="large", columnspacing=1.3, borderpad=0, labelspacing=0.1, handletextpad=0.5)
+plt.savefig("gamut.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
+
 # Matrices to select diagonal and off-diagonal elements
 diag = np.eye(21, dtype=bool)
 off_diag = ~diag
@@ -73,7 +95,7 @@ for ax in axs[:-1]:
 axs[0].set_xlim(0.9, 21.1)
 axs[0].set_xticks([1, 5, 10, 15, 20])
 axs[-1].set_xlabel("Forel-Ule color")
-axs[0].set_title("Forel-Ule colors in CIE L$^*$a$^*$b$^*$ space")
+axs[0].set_title("Forel-Ule colors in CIE Lab space")
 axs[2].legend(ncol=2, loc="center", bbox_to_anchor=(0.5,-0.8))
 fig.align_labels()
 plt.savefig("FU_Lab.pdf", bbox_inches="tight")
