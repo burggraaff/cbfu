@@ -59,12 +59,12 @@ for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::
 ax.axis("equal")
 ax.set_yticks(np.arange(6.5, 0, -1))
 ax.set_yticklabels(examples_labels)
-ax.tick_params(axis="y", left=False, pad=0)
+ax.tick_params(axis="y", left=False, pad=-10)
 
 ax.set_xticks(np.arange(kwargs["width"]/2, 21, 1))
 ax.set_xticklabels(fu.numbers)
 ax.set_xlabel("Forel-Ule colour")
-ax.tick_params(axis="x", bottom=False, labelbottom=False, labeltop=True)
+ax.tick_params(axis="x", bottom=False, labelbottom=False, labeltop=True, pad=-10)
 ax.xaxis.set_label_position("top")
 for tick in ax.xaxis.get_major_ticks():
     tick.label.set_horizontalalignment("center")
