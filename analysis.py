@@ -30,10 +30,10 @@ FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np
 
 # Plot chromaticities on gamut
 kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
-plt.figure(figsize=(col,4))
+fig = plt.figure(figsize=(col,2))
 plot_flat_gamut(plot_planckian_locus=False, axes_labels=("", ""))
-plt.scatter(*FU_deficient_xy[0,-1].T, c="k", marker="o", s=25)
-plt.plot(*FU_deficient_xy[0,-1].T, c="k")
+plt.scatter(*FU_deficient_xy[0,-1].T, c="k", marker="o", s=10)
+plt.plot(*FU_deficient_xy[0,-1].T, c="k", lw=1)
 rectangles = [patches.Rectangle(xy=(-1,-1), facecolor=rgb, label=j, **kwargs) for j, rgb in enumerate(examples_sRGB[0], start=1)]
 for rect in rectangles:
     plt.gca().add_patch(rect)
@@ -42,7 +42,8 @@ plt.ylim(-0.05, 0.9)
 plt.xlabel("$x$")
 plt.ylabel("$y$")
 # plt.title("Forel-Ule scale")
-plt.legend(loc="upper left", ncol=3, bbox_to_anchor=(0, -0.15), frameon=False, markerfirst=False, fontsize="large", columnspacing=1.3, borderpad=0, labelspacing=0.1, handletextpad=0.5)
+plt.legend(loc="upper left", ncol=2, bbox_to_anchor=(1, 1), frameon=False, markerfirst=False, fontsize=10, columnspacing=1, borderpad=0, labelspacing=0.1, handletextpad=0.5)
+fig.set_size_inches(col, 2.5)
 plt.savefig("Fig1.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
