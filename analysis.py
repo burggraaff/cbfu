@@ -25,7 +25,7 @@ examples_labels = ["Regular", "Protanomaly", "Protanopia", "Deuteranomaly", "Deu
 extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
 extreme_labels = ["Regular", "Protan", "Deutan", "Tritan"]
 
-# Color squares plot
+# Colour squares plot
 kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
 fig, ax = plt.subplots(figsize=(col2, 2))
 for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::-1])):
@@ -41,7 +41,7 @@ ax.tick_params(axis="y", left=False, pad=0)
 
 ax.set_xticks(np.arange(kwargs["width"]/2, 21, 1))
 ax.set_xticklabels(fu.numbers)
-ax.set_xlabel("Forel-Ule color")
+ax.set_xlabel("Forel-Ule colour")
 ax.tick_params(axis="x", bottom=False, labelbottom=False, labeltop=True)
 ax.xaxis.set_label_position("top")
 for tick in ax.xaxis.get_major_ticks():
@@ -94,8 +94,8 @@ for ax in axs[:-1]:
     ax.tick_params(axis="x", bottom=False, labelbottom=False)
 axs[0].set_xlim(0.9, 21.1)
 axs[0].set_xticks([1, 5, 10, 15, 20])
-axs[-1].set_xlabel("Forel-Ule color")
-axs[0].set_title("Forel-Ule colors in CIE Lab space")
+axs[-1].set_xlabel("Forel-Ule colour")
+axs[0].set_title("Forel-Ule colours in CIE Lab space")
 axs[2].legend(ncol=2, loc="center", bbox_to_anchor=(0.5,-0.8))
 fig.align_labels()
 plt.savefig("FU_Lab.pdf", bbox_inches="tight")
@@ -172,7 +172,7 @@ for ax in axs[:2]:
 axs[-1].set_xlim(1, 0)
 axs[-1].set_xticks([1, 0.75, 0.5, 0.25, 0])
 axs[-1].set_xlabel("Relative cone contribution $k$")
-axs[0].set_title("Discriminability of FU colors")
+axs[0].set_title("Discriminability of FU colours")
 axs[1].legend(loc="best", ncol=2)
 fig.align_labels()
 plt.savefig("difference_stats_Lab.pdf", bbox_inches="tight")
@@ -184,7 +184,7 @@ def find_matching_pairs(data, threshold):
     matching_pairs = matching_pairs[matching_pairs[:,0] != matching_pairs[:,1]]  # Remove diagonals
     matching_pairs = np.sort(matching_pairs) # Sort horizontally, eg [1, 0] becomes [0, 1]
     matching_pairs = np.unique(matching_pairs, axis=0) # Remove duplicates
-    matching_pairs += 1 # From index to FU color
+    matching_pairs += 1 # From index to FU colour
     return matching_pairs
 
 # Find pairs that are < JND
