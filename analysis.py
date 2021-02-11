@@ -6,9 +6,9 @@ from matplotlib import pyplot as plt, patches, cm
 from mpl_toolkits.axes_grid1 import AxesGrid
 from colorio._tools import plot_flat_gamut
 
-# Applied Optics column widths
-col1 = 3.25
-col2 = 5.75
+# PLOS ONE column and maximum width
+col = 5.2
+maxwidth = 7.5
 
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz_e, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
@@ -30,7 +30,7 @@ FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np
 
 # Plot chromaticities on gamut
 kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
-plt.figure(figsize=(col1,4))
+plt.figure(figsize=(col,4))
 plot_flat_gamut(plot_planckian_locus=False, axes_labels=("", ""))
 plt.scatter(*FU_deficient_xy[0,-1].T, c="k", marker="o", s=25)
 plt.plot(*FU_deficient_xy[0,-1].T, c="k")
@@ -48,7 +48,7 @@ plt.show()
 plt.close()
 
 # Colour squares plot
-fig, ax = plt.subplots(figsize=(col2, 2))
+fig, ax = plt.subplots(figsize=(col, 2))
 for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::-1])):
     print(i, label)
     rectangles = [patches.Rectangle(xy=(j,i), facecolor=rgb, **kwargs) for j, rgb in enumerate(FU_list)]
@@ -83,7 +83,7 @@ FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)
 ylabels = ["L$^*$", "a$^*$", "b$^*$"]
 formats = ["^-", "s-", "p-"]
 colours = ["#D81B60", "#FFC107", "#1E88E5"]
-fig, axs = plt.subplots(nrows=3, figsize=(col1,4), sharex=True, gridspec_kw={"hspace": 0.07})
+fig, axs = plt.subplots(nrows=3, figsize=(col,4), sharex=True, gridspec_kw={"hspace": 0.07})
 for k, (ax, ylabel) in enumerate(zip(axs, ylabels)):
     ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, c="#004D40", label="Regular")
     for i, (label, fmt, c) in enumerate(zip(extreme_labels[1:], formats, colours)):
@@ -111,7 +111,7 @@ distances_Lab_regular = distances_Lab[0,-1]
 distances_Lab_JND = distances_Lab/mat.JND
 
 # Combined distance matrix plot
-fig = plt.figure(figsize=(col2, 3.2))
+fig = plt.figure(figsize=(col, 3.2))
 grid = AxesGrid(fig, 111, nrows_ncols=(2, 4), axes_pad=0.1, cbar_mode="edge", cbar_location="right", cbar_pad=0.1, cbar_size="13%")
 for ax, dist, label in zip(grid.axes_row[0], distances_Lab[extreme_indices], extreme_labels):
     im = ax.imshow(dist, extent=(0, 21, 21, 0), cmap=cm.get_cmap("cividis_r", 10), vmin=0, vmax=50)
@@ -159,7 +159,7 @@ nr_under_3_JND = (np.sum(distances_Lab_JND[...,off_diag] < 3, axis=2))//2
 
 # Combined plot of distance statistics
 # Make 2x2? Median/Min on left, Pairs on the right
-fig, axs = plt.subplots(nrows=4, sharex=True, figsize=(col1,6))
+fig, axs = plt.subplots(nrows=4, sharex=True, figsize=(col,6))
 for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_3_JND, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$ 3 JND", "Pairs $<$JND"]):
     for i, (label, c) in enumerate(zip(extreme_labels[1:], colours)):
         ax.plot(mat.k, dist[i], lw=3, label=label, c=c)
