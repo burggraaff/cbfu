@@ -25,8 +25,29 @@ examples_labels = ["Regular", "Protanomaly", "Protanopia", "Deuteranomaly", "Deu
 extreme_indices = ((0, 0, 1, 2), (-1, 0, 0, 0))
 extreme_labels = ["Regular", "Protan", "Deutan", "Tritan"]
 
-# Colour squares plot
+# Chromaticities
+FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
+
+# Plot chromaticities on gamut
 kwargs = {"width": 0.9, "height": 0.9, "edgecolor": "none"}
+plt.figure(figsize=(col1,4))
+plot_flat_gamut(plot_planckian_locus=False, axes_labels=("", ""))
+plt.scatter(*FU_deficient_xy[0,-1].T, c="k", marker="o", s=25)
+plt.plot(*FU_deficient_xy[0,-1].T, c="k")
+rectangles = [patches.Rectangle(xy=(-1,-1), facecolor=rgb, label=j, **kwargs) for j, rgb in enumerate(examples_sRGB[0], start=1)]
+for rect in rectangles:
+    plt.gca().add_patch(rect)
+plt.xlim(-0.05, 0.75)
+plt.ylim(-0.05, 0.9)
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title("Forel-Ule scale")
+plt.legend(loc="upper left", ncol=3, bbox_to_anchor=(0, -0.15), frameon=False, markerfirst=False, fontsize="large", columnspacing=1.3, borderpad=0, labelspacing=0.1, handletextpad=0.5)
+plt.savefig("gamut.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
+
+# Colour squares plot
 fig, ax = plt.subplots(figsize=(col2, 2))
 for i, (FU_list, label) in enumerate(zip(examples_sRGB[::-1], examples_labels[::-1])):
     print(i, label)
@@ -49,27 +70,6 @@ for tick in ax.xaxis.get_major_ticks():
 
 plt.box()
 plt.savefig("FU_example.pdf", bbox_inches="tight")
-plt.show()
-plt.close()
-
-# Chromaticities
-FU_deficient_xy = FU_deficient_XYZ[...,:2] / FU_deficient_XYZ.sum(axis=3)[...,np.newaxis]
-
-# Plot chromaticities on gamut
-plt.figure(figsize=(col1,4))
-plot_flat_gamut(plot_planckian_locus=False, axes_labels=("", ""))
-plt.scatter(*FU_deficient_xy[0,-1].T, c="k", marker="o", s=25)
-plt.plot(*FU_deficient_xy[0,-1].T, c="k")
-rectangles = [patches.Rectangle(xy=(-1,-1), facecolor=rgb, label=j, **kwargs) for j, rgb in enumerate(examples_sRGB[0], start=1)]
-for rect in rectangles:
-    plt.gca().add_patch(rect)
-plt.xlim(-0.05, 0.75)
-plt.ylim(-0.05, 0.9)
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.title("Forel-Ule scale")
-plt.legend(loc="upper left", ncol=3, bbox_to_anchor=(0, -0.15), frameon=False, markerfirst=False, fontsize="large", columnspacing=1.3, borderpad=0, labelspacing=0.1, handletextpad=0.5)
-plt.savefig("gamut.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
@@ -158,6 +158,7 @@ nr_under_JND = (np.sum(distances_Lab_JND[...,off_diag] < 1, axis=2))//2
 nr_under_3_JND = (np.sum(distances_Lab_JND[...,off_diag] < 3, axis=2))//2
 
 # Combined plot of distance statistics
+# Make 2x2? Median/Min on left, Pairs on the right
 fig, axs = plt.subplots(nrows=4, sharex=True, figsize=(col1,6))
 for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_3_JND, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$ 3 JND", "Pairs $<$JND"]):
     for i, (label, c) in enumerate(zip(extreme_labels[1:], colours)):
