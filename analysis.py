@@ -145,7 +145,7 @@ for ax in grid.axes_row[1]:
     ax.set_xlabel("FU")
 
 fig.suptitle("Forel-Ule confusion matrix")
-plt.savefig("distance_matrix_combined.pdf", bbox_inches="tight")
+plt.savefig("difference_matrix_combined.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
@@ -175,7 +175,7 @@ axs[-1].set_xlabel("Relative cone contribution $k$")
 axs[0].set_title("Discriminability of FU colors")
 axs[1].legend(loc="best", ncol=2)
 fig.align_labels()
-plt.savefig("distance_stats_Lab.pdf", bbox_inches="tight")
+plt.savefig("difference_stats_Lab.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
