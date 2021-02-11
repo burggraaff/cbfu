@@ -10,6 +10,11 @@ from colorio._tools import plot_flat_gamut
 col = 5.2
 maxwidth = 7.5
 
+# PLOS ONE figure settings
+plt.rcParams["font.family"] = "sans-serif"
+plt.rcParams["font.sans-serif"] = "Arial"
+plt.rcParams["font.size"] = 10.0
+
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz_e, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
 
@@ -43,7 +48,7 @@ plt.xlabel("$x$")
 plt.ylabel("$y$")
 # plt.title("Forel-Ule scale")
 plt.legend(loc="upper left", ncol=2, bbox_to_anchor=(1, 1), frameon=False, markerfirst=False, fontsize=10, columnspacing=1, borderpad=0, labelspacing=0.1, handletextpad=0.5)
-fig.set_size_inches(col, 2.5)
+fig.set_size_inches(col, 2)
 plt.savefig("Fig1.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
