@@ -48,25 +48,25 @@ red_LMS = M_xyz_d65_to_lms @ red_XYZ
 blue_LMS = M_xyz_d65_to_lms @ blue_XYZ
 white_LMS = M_xyz_d65_to_lms @ white_XYZ
 
-a = np.linspace(0, 1, 101)
-zeros = np.zeros_like(a)
-ones = np.ones_like(a)
+k = np.linspace(0, 1, 101)
+zeros = np.zeros_like(k)
+ones = np.ones_like(k)
 
 # L-weak
-q2l = (1 - a) * (blue_LMS[1] - blue_LMS[0]) / (blue_LMS[1] - blue_LMS[2])
-q1l = 1 - a - q2l
-SL = np.stack([a, q1l, q2l, zeros, ones, zeros, zeros, zeros, ones], axis=1).reshape(-1, 3, 3)
+q2l = (1 - k) * (blue_LMS[1] - blue_LMS[0]) / (blue_LMS[1] - blue_LMS[2])
+q1l = 1 - k - q2l
+SL = np.stack([k, q1l, q2l, zeros, ones, zeros, zeros, zeros, ones], axis=1).reshape(-1, 3, 3)
 
 
 # M-weak
-q2m = (1 - a) * (blue_LMS[0] - blue_LMS[1]) / (blue_LMS[0] - blue_LMS[2])
-q1m = 1 - a - q2m
-SM = np.stack([ones, zeros, zeros, q1m, a, q2m, zeros, zeros, ones], axis=1).reshape(-1, 3, 3)
+q2m = (1 - k) * (blue_LMS[0] - blue_LMS[1]) / (blue_LMS[0] - blue_LMS[2])
+q1m = 1 - k - q2m
+SM = np.stack([ones, zeros, zeros, q1m, k, q2m, zeros, zeros, ones], axis=1).reshape(-1, 3, 3)
 
 # S-weak
-q2s = (1 - a) * (red_LMS[0] - red_LMS[2]) / (red_LMS[0] - red_LMS[1])
-q1s = 1 - a - q2s
-SS = np.stack([ones, zeros, zeros, zeros, ones, zeros, q1s, q2s, a], axis=1).reshape(-1, 3, 3)
+q2s = (1 - k) * (red_LMS[0] - red_LMS[2]) / (red_LMS[0] - red_LMS[1])
+q1s = 1 - k - q2s
+SS = np.stack([ones, zeros, zeros, zeros, ones, zeros, q1s, q2s, k], axis=1).reshape(-1, 3, 3)
 
 # LMS-weak combined
 # From regular LMS to deficient LMS

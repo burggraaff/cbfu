@@ -161,7 +161,7 @@ nr_under_3_JND = (np.sum(distances_Lab_JND[...,off_diag] < 3, axis=2))//2
 fig, axs = plt.subplots(nrows=4, sharex=True, figsize=(col1,6))
 for ax, dist, ylabel in zip(axs, [median_distance_Lab, min_distance_Lab, nr_under_3_JND, nr_under_JND], ["Median $\Delta E_{00}$", "Minimum $\Delta E_{00}$", "Pairs $<$ 3 JND", "Pairs $<$JND"]):
     for i, (label, c) in enumerate(zip(extreme_labels[1:], colours)):
-        ax.plot(mat.a, dist[i], lw=3, label=label, c=c)
+        ax.plot(mat.k, dist[i], lw=3, label=label, c=c)
     ax.set_ylim(ymin=0)
     ax.grid(ls="--", c="0.7")
     ax.set_ylabel(ylabel)
@@ -171,7 +171,7 @@ for ax in axs[:2]:
     ax.axhline(mat.JND, c="#004D40", lw=3, ls="dotted", label=f"JND")
 axs[-1].set_xlim(1, 0)
 axs[-1].set_xticks([1, 0.75, 0.5, 0.25, 0])
-axs[-1].set_xlabel("Relative cone contribution $a$")
+axs[-1].set_xlabel("Relative cone contribution $k$")
 axs[0].set_title("Discriminability of FU colors")
 axs[1].legend(loc="best", ncol=2)
 fig.align_labels()
