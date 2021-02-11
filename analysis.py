@@ -43,7 +43,7 @@ plt.xlabel("$x$")
 plt.ylabel("$y$")
 # plt.title("Forel-Ule scale")
 plt.legend(loc="upper left", ncol=3, bbox_to_anchor=(0, -0.15), frameon=False, markerfirst=False, fontsize="large", columnspacing=1.3, borderpad=0, labelspacing=0.1, handletextpad=0.5)
-plt.savefig("gamut.pdf", bbox_inches="tight")
+plt.savefig("Fig1.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
@@ -69,7 +69,7 @@ for tick in ax.xaxis.get_major_ticks():
     tick.label.set_horizontalalignment("center")
 
 plt.box()
-plt.savefig("FU_example.pdf", bbox_inches="tight")
+plt.savefig("Fig2.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
@@ -98,7 +98,7 @@ axs[-1].set_xlabel("Forel-Ule colour")
 # axs[0].set_title("Forel-Ule colours in CIE Lab space")
 axs[2].legend(ncol=2, loc="center", bbox_to_anchor=(0.5,-0.8))
 fig.align_labels()
-plt.savefig("FU_Lab.pdf", bbox_inches="tight")
+plt.savefig("Fig3.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
@@ -145,7 +145,7 @@ for ax in grid.axes_row[1]:
     ax.set_xlabel("FU")
 
 # fig.suptitle("Forel-Ule confusion matrix")
-plt.savefig("difference_matrix_combined.pdf", bbox_inches="tight")
+plt.savefig("Fig4.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
@@ -179,7 +179,7 @@ for ax in axs[1]:
 # axs[0].set_title("Discriminability of FU colours")
 axs[1,0].legend(loc="best", ncol=2, fontsize=8, labelspacing=0.1, columnspacing=1)
 fig.align_labels()
-plt.savefig("difference_stats_Lab.pdf", bbox_inches="tight")
+plt.savefig("Fig5.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
 
