@@ -15,6 +15,7 @@ plt.rcParams["font.family"] = "sans-serif"
 plt.rcParams["font.sans-serif"] = "Arial"
 plt.rcParams["font.size"] = 10.0
 plt.rcParams["axes.titlesize"] = 12.0
+tif_kwargs = {"bbox_inches": "tight", "dpi": 600, "pil_kwargs": {"compression": "tiff_lzw"}}
 
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz_e, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
@@ -51,6 +52,7 @@ plt.ylabel("$y$")
 plt.legend(loc="upper left", ncol=2, bbox_to_anchor=(1, 1), frameon=False, markerfirst=False, fontsize=10, columnspacing=1, borderpad=0, labelspacing=0.1, handletextpad=0.5)
 fig.set_size_inches(col, 2)
 plt.savefig("Fig1.pdf", bbox_inches="tight")
+plt.savefig("Fig1.tif", **tif_kwargs)
 plt.show()
 plt.close()
 
@@ -77,6 +79,7 @@ for tick in ax.xaxis.get_major_ticks():
 
 plt.box()
 plt.savefig("Fig2.pdf", bbox_inches="tight")
+plt.savefig("Fig2.tif", **tif_kwargs)
 plt.show()
 plt.close()
 
@@ -106,6 +109,7 @@ axs[-1].set_xlabel("Forel-Ule colour")
 axs[2].legend(ncol=4, loc="center", bbox_to_anchor=(0.5,-0.65), columnspacing=1)
 fig.align_labels()
 plt.savefig("Fig3.pdf", bbox_inches="tight")
+plt.savefig("Fig3.tif", **tif_kwargs)
 plt.show()
 plt.close()
 
@@ -153,6 +157,7 @@ for ax in grid.axes_row[1]:
 
 # fig.suptitle("Forel-Ule confusion matrix")
 plt.savefig("Fig4.pdf", bbox_inches="tight")
+plt.savefig("Fig4.tif", **tif_kwargs)
 plt.show()
 plt.close()
 
@@ -187,6 +192,7 @@ for ax in axs[1]:
 axs[1,0].legend(loc="best", ncol=2, fontsize=8, labelspacing=0.1, columnspacing=1)
 fig.align_labels()
 plt.savefig("Fig5.pdf", bbox_inches="tight")
+plt.savefig("Fig5.tif", **tif_kwargs)
 plt.show()
 plt.close()
 
