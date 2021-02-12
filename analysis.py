@@ -14,6 +14,7 @@ maxwidth = 7.5
 plt.rcParams["font.family"] = "sans-serif"
 plt.rcParams["font.sans-serif"] = "Arial"
 plt.rcParams["font.size"] = 10.0
+plt.rcParams["axes.titlesize"] = 12.0
 
 FU_LMS_deficiency = np.einsum("caij,fj->cafi",mat.SLMS, fu.FU_LMS) # axes: deficiency (lms), a, FU number, lms
 FU_deficient_XYZ = np.einsum("ij,cafj->cafi", mat.M_lms_to_xyz_e, FU_LMS_deficiency) # axes: deficiency (lms), a, FU number, xyz
@@ -89,7 +90,7 @@ FU_deficient_lab = mat.XYZ_to_Lab(FU_deficient_XYZ)
 ylabels = ["L$^*$", "a$^*$", "b$^*$"]
 formats = ["^-", "s-", "p-"]
 colours = ["#D81B60", "#FFC107", "#1E88E5"]
-fig, axs = plt.subplots(nrows=3, figsize=(col,4), sharex=True, gridspec_kw={"hspace": 0.07})
+fig, axs = plt.subplots(nrows=3, figsize=(4,4), sharex=True, gridspec_kw={"hspace": 0.07})
 for k, (ax, ylabel) in enumerate(zip(axs, ylabels)):
     ax.plot(fu.numbers, FU_deficient_lab[0,-1,:,k], "o-", lw=3, c="#004D40", label="Regular")
     for i, (label, fmt, c) in enumerate(zip(extreme_labels[1:], formats, colours)):
@@ -102,7 +103,7 @@ axs[0].set_xlim(0.9, 21.1)
 axs[0].set_xticks([1, 5, 10, 15, 20])
 axs[-1].set_xlabel("Forel-Ule colour")
 # axs[0].set_title("Forel-Ule colours in CIE Lab space")
-axs[2].legend(ncol=2, loc="center", bbox_to_anchor=(0.5,-0.8))
+axs[2].legend(ncol=4, loc="center", bbox_to_anchor=(0.5,-0.65), columnspacing=1)
 fig.align_labels()
 plt.savefig("Fig3.pdf", bbox_inches="tight")
 plt.show()
